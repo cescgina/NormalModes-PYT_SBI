@@ -1,2 +1,4 @@
 ## Just ignoring the pre-compiled python documents from the git
 __pycache__/
+pdbfiles/
+.ropeproject/
