@@ -4,7 +4,7 @@ made by DMP.
 """
 ### MODULE 1 ####
 
-from Bio.PDB import *
+import Bio.PDB as pdb
 
 def pdb_code_check(code):
     """Checks if the code provided have 4 letters"""
@@ -30,8 +30,8 @@ def from_pdb_code_to_structure(code):
     from the web database and generated a structure instance.
     """
     code = pdb_code_check(code)
-    pdbl = PDBList()
-    parser = PDBParser()
+    pdbl = pdb.PDBList()
+    parser = pdb.PDBParser()
     structure = parser.get_structure(code, pdbl.retrieve_pdb_file(code))
     if nmr_check(structure):
         return structure
