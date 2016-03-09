@@ -40,11 +40,11 @@ create a new branch named "feature_x" and switch to it using
   `git push origin <branch>`
 
   C) update & merge
-  
+
   to update your local repository to the newest commit, execute
-  
+
   `git pull`
-  
+
   in your working directory to fetch and merge remote changes. To merge another branch into your active branch (e.g. master), use
 
   `git merge <branch>`
@@ -61,4 +61,5 @@ create a new branch named "feature_x" and switch to it using
 
 * Write header and trailer to superimposed PDB file (it seems like it is not
   easy, maybe we should not write the new coordinates)
+  * I (david) am trying to copy paste the header by reading the lines. 
 * Add possibility of doing the essential dynamics from MD trajectories
