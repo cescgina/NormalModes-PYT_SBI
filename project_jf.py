@@ -64,12 +64,16 @@ def Superimpose_models(structure):
             super_imposer.apply(alt_model.get_atoms())
         print("RMS(first model, model %i) = %0.2f" %
               (alt_model.id, super_imposer.rms))
+    # Due to the way Bio.PDB.PDBIO is written, the pdbalignedfile
+    # does not contain any header or trailer information, maybet it is not
+    # necessary to write the modified structure at all, since the
+    # superimposition changes are applied in the Structure object
     io = pdb.PDBIO()
     io.set_structure(structure)
     io.save(pathname+pdbalignedfile)
 
 
-def CreateCordsArray(structure, N):
+def createcordsarray(structure, N):
     """ Helper function to extract the coordinates of the atoms to calculate
     the covariance matrix afterwards
     """
@@ -87,7 +91,7 @@ def CreateCordsArray(structure, N):
     return (array_stored, means)
 
 
-def CalculateCovariance(array_stor, means, structure):
+def cal_cov(array_stor, means, structure):
     """ Helper function to calculate the covariance matrix"""
     N = means.size
     C = np.zeros((N, N))
@@ -102,6 +106,6 @@ def CalculateCovariance(array_stor, means, structure):
                 C[ij][ii] = C[ii][ij]
     return C
 
-(array_stored, means) = CreateCordsArray(structure, N)
-C = CalculateCovariance(array_stored, means, structure)
-eig = linalg.eigvals(C)
+(array_stored, means) = createcordsarray(structure, N)
+C = cal_cov(array_stored, means, structure)
+evl, evc = linalg.eigh(C)

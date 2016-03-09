@@ -1,15 +1,28 @@
-# NormalModes-PYT_SBI
+=======
+ NormalModes-PYT_SBI
+=======
+
+.. contents::
+
+AUTHORS
+------
+
+    David Mas Ponte & Joan Francesc Gilabert Navarro
 
 GIT USAGE
+----------
 
 1) You can propose changes (add it to the Index) using
   git add <filename>
   git add *
+
 2) This is the first step in the basic git workflow. To actually commit these changes use
   git commit -m "Commit message"
 Now the file is committed to the HEAD, but not in your remote repository yet.
+
 3) Your changes are now in the HEAD of your local working copy. To send those changes to your remote repository, execute
   git push origin master
+
 B) Change master to whatever branch you want to push your changes to.
 create a new branch named "feature_x" and switch to it using
   git checkout -b feature_x
@@ -30,3 +43,10 @@ in both cases git tries to auto-merge changes. Unfortunately, this is not always
   git add <filename>
 before merging changes, you can also preview them by using
   git diff <source_branch> <target_branch>
+
+TO-DO
+----------
+
+* Write header and trailer to superimposed PDB file (it seems like it is not
+  easy, maybe we should not write the new coordinates)
+* Add possibility of doing the essential dynamics from MD trajectories
