@@ -3,3 +3,4 @@ __pycache__/
 pdbfiles/
 .ropeproject/
 *.pyc
+*.swp

@@ -3,33 +3,30 @@ import Bio.PDB as pdb
 import os
 import numpy as np
 from scipy import linalg
-
-# pdb_id = '1jm7'
-pdb_id = '1joy'
-pdbfile = pdb_id + '.ent'
-pdbalignedfile = pdb_id + 'align.pdb'
-pathname = 'pdbfiles/'
-if not os.path.exists('pdbfiles'):
-    os.mkdir('pdbfiles')
-if not os.path.exists(pathname+pdbfile):
-    pdbobj = pdb.PDBList()
-    pdbfile = pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
-
-parser = pdb.PDBParser(QUIET=True)
-structure = parser.get_structure(pdb_id, pdbfile)
-header = parser.get_header()
-
-N = 0
-for residue in structure[0].get_residues():
-    if residue.has_id('CA'):
-        N += 1
+import matplotlib.pyplot as plt
 
 
-def Superimpose_models(structure):
+class WrongModeException(Exception):
+    def __init__(self, input_class, mode):
+        self.input_class = input_class
+        self.mode = mode
+
+    def __str__(self):
+        """ 2"""
+        return "You have selected the wrong mode, your input is %s \
+                and you have selected mode %s" % (self.input_class, self.mode)
+
+
+def is_NMR_struct(structure):
+    """ Function to ensure the loaded structure is a NMR"""
+    return 'nmr' in structure.header['structure_method'].lower()
+
+
+def superimpose_models(structure, atom_list):
     """ Function to sumperimpose all the models of the NMR pdb file into
     a reference model, which is assumed to be the first model of the ensemble
-        Writes a new pdb with the superimposed coordinates
     """
+    print("Superimposing different models onto the first one")
     ref_model = structure[0]
     for alt_model in structure:
         # Code from
@@ -44,8 +41,13 @@ def Superimpose_models(structure):
                 assert ref_res.id == alt_res.id
                 # CA = alpha carbon
                 if ref_res.has_id('CA'):
-                    ref_atoms.append(ref_res['CA'])
-                    alt_atoms.append(alt_res['CA'])
+                    if atom_list == []:
+                        ref_atoms.extend(list(ref_res.get_atoms()))
+                        alt_atoms.extend(list(alt_res.get_atoms()))
+                    else:
+                        for atom in atom_list:
+                            ref_atoms.append(ref_res[atom])
+                            alt_atoms.append(alt_res[atom])
 
         # Align these paired atom lists:
         super_imposer = pdb.Superimposer()
@@ -64,8 +66,9 @@ def Superimpose_models(structure):
             super_imposer.apply(alt_model.get_atoms())
         print("RMS(first model, model %i) = %0.2f" %
               (alt_model.id, super_imposer.rms))
+
     # Due to the way Bio.PDB.PDBIO is written, the pdbalignedfile
-    # does not contain any header or trailer information, maybet it is not
+    # does not contain any header or trailer information, maybe it is not
     # necessary to write the modified structure at all, since the
     # superimposition changes are applied in the Structure object
     io = pdb.PDBIO()
@@ -73,7 +76,7 @@ def Superimpose_models(structure):
     io.save(pathname+pdbalignedfile)
 
 
-def createcordsarray(structure, N):
+def createcordsarray(structure, N, atom_list):
     """ Helper function to extract the coordinates of the atoms to calculate
     the covariance matrix afterwards
     """
@@ -84,28 +87,66 @@ def createcordsarray(structure, N):
         j = 0
         for residue in structure[i].get_residues():
             if residue.has_id('CA'):
-                array_stored[i][j:j+3] = residue['CA'].get_coord()
-                means[0][j:j+3] += residue['CA'].get_coord()
-                j += 3
+                for atom in atom_list:
+                    array_stored[i][j:j+3] = residue[atom].get_coord()
+                    means[0][j:j+3] += residue[atom].get_coord()
+                    j += 3
     means *= (1/n)
+    print(j, 3*N)
     return (array_stored, means)
 
 
-def cal_cov(array_stor, means, structure):
+def cal_cov(array_stor, means):
     """ Helper function to calculate the covariance matrix"""
-    N = means.size
+    (n, N) = array_stor.shape
     C = np.zeros((N, N))
-    n = len(structure[0])
     for k in range(n):
         for ii in range(N):
             for ij in range(ii, N):
-                C[ii][ij] += array_stored[k][ii]*array_stor[k][ij] - \
+                C[ii][ij] += array_stor[k][ii]*array_stor[k][ij] - \
                     array_stor[k][ii]*means[0][ij]-array_stor[k][ij] * \
                     means[0][ii] + means[0][ij]*means[0][ii]
                 C[ii][ij] *= (1/n)
                 C[ij][ii] = C[ii][ij]
     return C
 
-(array_stored, means) = createcordsarray(structure, N)
-C = cal_cov(array_stored, means, structure)
+# pdb_id = '1jm7'
+pdb_id = '1msf'
+pdbfile = pdb_id + '.ent'
+pdbalignedfile = pdb_id + 'align.pdb'
+pathname = 'pdbfiles/'
+if not os.path.exists('pdbfiles'):
+    os.mkdir('pdbfiles')
+if not os.path.exists(pathname+pdbfile):
+    pdbobj = pdb.PDBList()
+    pdbfile = pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
+
+# atom_list = ['CA']
+atom_list = ['N', 'CA', 'C', 'O']
+parser = pdb.PDBParser(QUIET=True)
+structure = parser.get_structure(pdb_id, pdbfile)
+header = parser.get_header()
+if not is_NMR_struct(structure):
+    raise WrongModeException(structure.header['structure_method'], 'NMR')
+N = 0
+for residue in structure[0].get_residues():
+    if residue.has_id('CA'):
+        N += 1
+
+if atom_list != []:
+    N *= len(atom_list)
+
+superimpose_models(structure, atom_list)
+n = len(structure)
+print("Calculating means and coordinates")
+(array_stored, means) = createcordsarray(structure, N, atom_list)
+print("Calculating covariance matrix")
+C = cal_cov(array_stored, means)
+print("Calculating eigenvalues and eigenvectors")
 evl, evc = linalg.eigh(C)
+
+valid_evl = evl[-1:-n:-1]
+plt.plot(valid_evl)
+plt.xlabel('Eigenvector index')
+plt.ylabel('Eigenvalue')
+plt.show()
