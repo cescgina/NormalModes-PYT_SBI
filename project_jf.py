@@ -4,6 +4,7 @@ import os
 import numpy as np
 from scipy import linalg
 import matplotlib.pyplot as plt
+import module_david as mdl
 
 
 class WrongModeException(Exception):
@@ -64,16 +65,9 @@ def superimpose_models(structure, atom_list):
             # Update the structure by moving all the atoms in
             # this model (not just the ones used for the alignment)
             super_imposer.apply(alt_model.get_atoms())
-        print("RMS(first model, model %i) = %0.2f" %
+        print("RMS(Refernce model, model %i) = %0.2f" %
               (alt_model.id, super_imposer.rms))
-
-    # Due to the way Bio.PDB.PDBIO is written, the pdbalignedfile
-    # does not contain any header or trailer information, maybe it is not
-    # necessary to write the modified structure at all, since the
-    # superimposition changes are applied in the Structure object
-    io = pdb.PDBIO()
-    io.set_structure(structure)
-    io.save(pathname+pdbalignedfile)
+    return structure
 
 
 def createcordsarray(structure, N, atom_list):
@@ -92,7 +86,6 @@ def createcordsarray(structure, N, atom_list):
                     means[0][j:j+3] += residue[atom].get_coord()
                     j += 3
     means *= (1/n)
-    print(j, 3*N)
     return (array_stored, means)
 
 
@@ -103,10 +96,8 @@ def cal_cov(array_stor, means):
     for k in range(n):
         for ii in range(N):
             for ij in range(ii, N):
-                C[ii][ij] += array_stor[k][ii]*array_stor[k][ij] - \
-                    array_stor[k][ii]*means[0][ij]-array_stor[k][ij] * \
-                    means[0][ii] + means[0][ij]*means[0][ii]
-                C[ii][ij] *= (1/n)
+                C[ii][ij] += (1 / n) * (array_stor[k][ii] - means[0][ii]) * \
+                                (array_stor[k][ij] - means[0][ij])
                 C[ij][ii] = C[ii][ij]
     return C
 
@@ -115,6 +106,7 @@ pdb_id = '1msf'
 pdbfile = pdb_id + '.ent'
 pdbalignedfile = pdb_id + 'align.pdb'
 pathname = 'pdbfiles/'
+pdb_superimp = pathname + pdb_id + 'superimp.pdb'
 if not os.path.exists('pdbfiles'):
     os.mkdir('pdbfiles')
 if not os.path.exists(pathname+pdbfile):
@@ -135,9 +127,15 @@ for residue in structure[0].get_residues():
 
 if atom_list != []:
     N *= len(atom_list)
-
-superimpose_models(structure, atom_list)
 n = len(structure)
+
+head = mdl.store_header_text(pdbfile)
+structure = superimpose_models(structure, atom_list)
+io = pdb.PDBIO()
+io.set_structure(structure)
+io.save(pdb_superimp)
+mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
+
 print("Calculating means and coordinates")
 (array_stored, means) = createcordsarray(structure, N, atom_list)
 print("Calculating covariance matrix")
@@ -145,8 +143,10 @@ C = cal_cov(array_stored, means)
 print("Calculating eigenvalues and eigenvectors")
 evl, evc = linalg.eigh(C)
 
-valid_evl = evl[-1:-n:-1]
-plt.plot(valid_evl)
+valid_evl = evl[-1:-n-1:-1] / 100
+plt.plot(range(1, n+1), valid_evl)
 plt.xlabel('Eigenvector index')
-plt.ylabel('Eigenvalue')
+plt.ylabel('Eigenvalue ($nm^2$)')
+plt.axis([0, n, 0, 3])
+plt.savefig('eig_plot.png', bbox_inches='tight')
 plt.show()

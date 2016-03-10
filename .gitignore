@@ -4,3 +4,5 @@ pdbfiles/
 .ropeproject/
 *.pyc
 *.swp
+*.swo
+obsolete/
