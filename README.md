@@ -59,7 +59,5 @@ create a new branch named "feature_x" and switch to it using
 
 ### TO-DO
 
-* Write header and trailer to superimposed PDB file (it seems like it is not
-  easy, maybe we should not write the new coordinates)
-  * I (david) am trying to copy paste the header by reading the lines. 
 * Add possibility of doing the essential dynamics from MD trajectories
+* Add intefaces( command line and graphical(Tkinter))
