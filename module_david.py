@@ -43,9 +43,10 @@ def merge_the_header(file_pdb, string_header, fileout):
 def pdb_code_check(code):
     """Checks if the code provided have 4 letters"""
     if len(code) == 4:
-        return code
+        return True
     else:
-        raise ValueError
+        return False
+
 
 
 def nmr_check(structure):
@@ -63,11 +64,13 @@ def from_pdb_code_to_structure(code):
     From a specific pdb code this function retrieves the structure file
     from the web database and generated a structure instance.
     """
-    code = pdb_code_check(code)
-    pdbl = pdb.PDBList()
-    parser = pdb.PDBParser(QUIET=True)
-    structure = parser.get_structure(code, pdbl.retrieve_pdb_file(code))
-    if nmr_check(structure):
-        return structure
+    if pdb_code_check(code):
+        pdbl = pdb.PDBList()
+        parser = pdb.PDBParser(QUIET=True)
+        structure = parser.get_structure(code, pdbl.retrieve_pdb_file(code))
+        if nmr_check(structure):
+            return structure
+        else:
+            return ValueError
     else:
         return ValueError
