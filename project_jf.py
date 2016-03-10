@@ -101,6 +101,28 @@ def cal_cov(array_stor, means):
                 C[ij][ii] = C[ii][ij]
     return C
 
+
+def calculate_eig_traj(evc, array_stored, means):
+    """ Calculates the coordinates for atoms in a certain eigenvector"""
+    pcord = np.dot(evc, (array_stored-means[0, :]))
+    eig_mov = pcord * evc + means
+    return eig_mov
+
+
+def structure_moved(structure, coords, atom_list):
+    """ Returns a new structure with the coordinates calculated from a
+    certain eigenvector"""
+    i = 0
+    for row in coords:
+        j = 0
+        for residue in structure[i].get_residues():
+            if residue.has_id('CA'):
+                for atom in atom_list:
+                    residue[atom].set_coord(row[j:j+3])
+                    j += 3
+        i += 1
+    return structure
+
 # pdb_id = '1jm7'
 pdb_id = '1msf'
 pdbfile = pdb_id + '.ent'
@@ -143,10 +165,24 @@ C = cal_cov(array_stored, means)
 print("Calculating eigenvalues and eigenvectors")
 evl, evc = linalg.eigh(C)
 
-valid_evl = evl[-1:-n-1:-1] / 100
-plt.plot(range(1, n+1), valid_evl)
-plt.xlabel('Eigenvector index')
-plt.ylabel('Eigenvalue ($nm^2$)')
-plt.axis([0, n, 0, 3])
-plt.savefig('eig_plot.png', bbox_inches='tight')
-plt.show()
+# i = 1  # Eigenvector selected, starting from 1
+# pcord = np.dot(evc[:, -i], (array_stored[0]-means[0, :]))
+# eig_mov = pcord * evc[:, -i] + means
+
+coords = np.zeros((n, 3*N))
+for ind in range(n):
+    coords[ind, :] = calculate_eig_traj(evc[:, -1], array_stored[ind], means)
+
+structure = structure_moved(structure, coords, atom_list)
+io = pdb.PDBIO()
+io.set_structure(structure)
+io.save('pdbfiles/ev1.pdb')
+
+# valid_evl = evl[-1:-n-1:-1] / 100
+#
+# plt.plot(range(1, n+1), valid_evl)
+# plt.xlabel('Eigenvector index')
+# plt.ylabel('Eigenvalue ($nm^2$)')
+# # plt.axis([0, n, 0, 3])
+# plt.savefig('eig_'+pdb_id+'_plot.png', bbox_inches='tight', dpi=300)
+# plt.show()
