@@ -93,12 +93,10 @@ def cal_cov(array_stor, means):
     """ Helper function to calculate the covariance matrix"""
     (n, N) = array_stor.shape
     C = np.zeros((N, N))
-    for k in range(n):
-        for ii in range(N):
-            for ij in range(ii, N):
-                C[ii][ij] += (1 / n) * (array_stor[k][ii] - means[0][ii]) * \
-                                (array_stor[k][ij] - means[0][ij])
-                C[ij][ii] = C[ii][ij]
+    for x in array_stor:
+        x_prod = x - means
+        C += np.outer(x_prod, x_prod)
+    C *= (1/n)
     return C
 
 
@@ -128,9 +126,12 @@ pdb_id = '1msf'
 pdbfile = pdb_id + '.ent'
 pdbalignedfile = pdb_id + 'align.pdb'
 pathname = 'pdbfiles/'
+pathplots = 'plots/'
 pdb_superimp = pathname + pdb_id + 'superimp.pdb'
-if not os.path.exists('pdbfiles'):
-    os.mkdir('pdbfiles')
+if not os.path.exists(pathname):
+    os.mkdir(pathname)
+if not os.path.exists(pathplots):
+    os.mkdir(pathplots)
 if not os.path.exists(pathname+pdbfile):
     pdbobj = pdb.PDBList()
     pdbfile = pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
@@ -157,6 +158,7 @@ io = pdb.PDBIO()
 io.set_structure(structure)
 io.save(pdb_superimp)
 mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
+os.remove(pdb_superimp)
 
 print("Calculating means and coordinates")
 (array_stored, means) = createcordsarray(structure, N, atom_list)
@@ -169,6 +171,7 @@ evl, evc = linalg.eigh(C)
 # pcord = np.dot(evc[:, -i], (array_stored[0]-means[0, :]))
 # eig_mov = pcord * evc[:, -i] + means
 
+
 coords = np.zeros((n, 3*N))
 for ind in range(n):
     coords[ind, :] = calculate_eig_traj(evc[:, -1], array_stored[ind], means)
@@ -176,13 +179,13 @@ for ind in range(n):
 structure = structure_moved(structure, coords, atom_list)
 io = pdb.PDBIO()
 io.set_structure(structure)
-io.save('pdbfiles/ev1.pdb')
+io.save(pathname+'ev1.pdb')
 
-# valid_evl = evl[-1:-n-1:-1] / 100
-#
-# plt.plot(range(1, n+1), valid_evl)
-# plt.xlabel('Eigenvector index')
-# plt.ylabel('Eigenvalue ($nm^2$)')
-# # plt.axis([0, n, 0, 3])
-# plt.savefig('eig_'+pdb_id+'_plot.png', bbox_inches='tight', dpi=300)
-# plt.show()
+valid_evl = evl[-1:-n-1:-1] / 100
+
+plt.plot(range(1, n+1), valid_evl)
+plt.xlabel('Eigenvector index')
+plt.ylabel('Eigenvalue ($nm^2$)')
+# plt.axis([0, n, 0, 3])
+plt.savefig(pathplots+'eig_'+pdb_id+'_plot.png', bbox_inches='tight', dpi=300)
+plt.show()
