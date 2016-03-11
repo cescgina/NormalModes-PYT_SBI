@@ -7,7 +7,7 @@ from tkinter import filedialog
 root = tkinter.Tk()
 
 #### SETTING THE width and the wide
-root.geometry("700x400")
+root.geometry("600x400")
 #### Setting the title
 root.wm_title("EDA: by JF Gilabert & D Mas")
 
@@ -27,8 +27,8 @@ subtitle.pack( side=tkinter.TOP )
 
 #### Generate a pdb code entry button.
 
-labelframe_code = tkinter.Frame(root, relief=tkinter.SUNKEN, bd=4)
-labelframe_code.pack(fill="both", side=tkinter.LEFT)
+labelframe_code = tkinter.Frame(root, bd=2)
+labelframe_code.pack( side=tkinter.TOP)
 
 entry_var = tkinter.StringVar()
 
@@ -49,32 +49,31 @@ def get_pdb():
      global entry_var
      global entry
      md.from_pdb_code_to_structure(str(entry_var.get()))
+     print("Finnished!\n")
+
 
 #CREATE THE LABEL
-label = tkinter.Label(labelframe_code, text="Enter UniprotAccession code:", \
-  font=("Helvetica", 18))
+label = tkinter.Label(labelframe_code, text="Enter a pdb code:", \
+  font=("Helvetica", 15), width=40)
 label.pack( side=tkinter.TOP )
 
 #CREATE THE ENTRY
-entry = tkinter.Entry(labelframe_code, bd=4, width=8, textvariable=entry_var)
+entry = tkinter.Entry(labelframe_code, bd=2, width=8, textvariable=entry_var)
 entry.pack( side=tkinter.TOP)
 
 b = tkinter.Button(labelframe_code, text="Check", command=check_uniprot_accession_code)
-b.pack( side=tkinter.LEFT)
+b.pack( side=tkinter.TOP)
 
 s = tkinter.Button(labelframe_code, text="Submit", command=get_pdb)
-s.pack( side=tkinter.RIGHT )
+s.pack( side=tkinter.TOP)
 
 ### GETTING THE file
-
-labelframe_file = tkinter.LabelFrame(root, text="Enter a pdb file", font=("Helvetica", 20))
-labelframe_file.pack(fill="both", side=tkinter.RIGHT)
 
 def select_file():
     filename = filedialog.askopenfilename()
 
-s = tkinter.Button(labelframe_file, text="Submit", command=select_file)
-s.pack( side=tkinter.RIGHT )
+s = tkinter.Button(labelframe_code, text="Add a pdb file", command=select_file)
+s.pack( side=tkinter.TOP)
 
 
 

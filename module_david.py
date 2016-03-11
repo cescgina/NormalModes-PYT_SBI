@@ -6,6 +6,8 @@ made by DMP.
 
 
 import Bio.PDB as pdb
+import urllib
+import sys
 
 
 def store_header_text(filename):
@@ -67,7 +69,12 @@ def from_pdb_code_to_structure(code):
     if pdb_code_check(code):
         pdbl = pdb.PDBList()
         parser = pdb.PDBParser(QUIET=True)
-        structure = parser.get_structure(code, pdbl.retrieve_pdb_file(code))
+        try:
+            structure = parser.get_structure(code, pdbl.retrieve_pdb_file(code, \
+                pdir="pdbfiles/"))
+        except urllib.error.URLError:
+            sys.stderr.write("There is no a structure with the pdb code {} \
+in the database\n".format(code))
         if nmr_check(structure):
             return structure
         else:
