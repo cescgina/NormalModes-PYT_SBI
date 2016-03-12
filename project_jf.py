@@ -1,10 +1,7 @@
 
 import Bio.PDB as pdb
-import os
 import numpy as np
-from scipy import linalg
 import matplotlib.pyplot as plt
-import module_david as mdl
 
 
 class WrongModeException(Exception):
@@ -121,71 +118,37 @@ def structure_moved(structure, coords, atom_list):
         i += 1
     return structure
 
+
+def plot_eig(evl, n, pathplots, pdb_id):
+    """ """
+    valid_evl = evl[-1:-n-1:-1] / 100
+    plt.plot(range(1, n+1), valid_evl)
+    plt.xlabel('Eigenvector index')
+    plt.ylabel('Eigenvalue ($nm^2$)')
+    # plt.axis([0, n, 0, 3])
+    plt.savefig(pathplots+'eig_'+pdb_id+'_plot.png', bbox_inches='tight',
+                dpi=300)
+    return plt
+
 # pdb_id = '1jm7'
 pdb_id = '1msf'
 pdbfile = pdb_id + '.ent'
 pdbalignedfile = pdb_id + 'align.pdb'
-pathname = 'pdbfiles/'
-pathplots = 'plots/'
-pdb_superimp = pathname + pdb_id + 'superimp.pdb'
-if not os.path.exists(pathname):
-    os.mkdir(pathname)
-if not os.path.exists(pathplots):
-    os.mkdir(pathplots)
-if not os.path.exists(pathname+pdbfile):
-    pdbobj = pdb.PDBList()
-    pdbfile = pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
 
-# atom_list = ['CA']
-atom_list = ['N', 'CA', 'C', 'O']
-parser = pdb.PDBParser(QUIET=True)
-structure = parser.get_structure(pdb_id, pdbfile)
-header = parser.get_header()
-if not is_NMR_struct(structure):
-    raise WrongModeException(structure.header['structure_method'], 'NMR')
-N = 0
-for residue in structure[0].get_residues():
-    if residue.has_id('CA'):
-        N += 1
 
-if atom_list != []:
-    N *= len(atom_list)
-n = len(structure)
-
-head = mdl.store_header_text(pdbfile)
-structure = superimpose_models(structure, atom_list)
-io = pdb.PDBIO()
-io.set_structure(structure)
-io.save(pdb_superimp)
-mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
-os.remove(pdb_superimp)
-
-print("Calculating means and coordinates")
-(array_stored, means) = createcordsarray(structure, N, atom_list)
-print("Calculating covariance matrix")
-C = cal_cov(array_stored, means)
-print("Calculating eigenvalues and eigenvectors")
-evl, evc = linalg.eigh(C)
+# if not is_NMR_struct(structure):
+#     raise WrongModeException(structure.header['structure_method'], 'NMR')
 
 # i = 1  # Eigenvector selected, starting from 1
 # pcord = np.dot(evc[:, -i], (array_stored[0]-means[0, :]))
 # eig_mov = pcord * evc[:, -i] + means
 
 
-coords = np.zeros((n, 3*N))
-for ind in range(n):
-    coords[ind, :] = calculate_eig_traj(evc[:, -1], array_stored[ind], means)
-
-structure = structure_moved(structure, coords, atom_list)
-io = pdb.PDBIO()
-io.set_structure(structure)
-io.save(pathname+'ev1.pdb')
-
-valid_evl = evl[-1:-n-1:-1] / 100
-
-plt.plot(range(1, n+1), valid_evl)
-plt.xlabel('Eigenvector index')
-plt.ylabel('Eigenvalue ($nm^2$)')
-# plt.axis([0, n, 0, 3])
-plt.savefig(pathplots+'eig_'+pdb_id+'_plot.png', bbox_inches='tight', dpi=300)
-plt.show()
+# coords = np.zeros((n, 3*N))
+# for ind in range(n):
+#     coords[ind, :] = calculate_eig_traj(evc[:, -1], array_stored[ind], means)
+#
+# structure = structure_moved(structure, coords, atom_list)
+# io = pdb.PDBIO()
+# io.set_structure(structure)
+# io.save(pathname+'ev1.pdb')
