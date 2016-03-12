@@ -59,5 +59,5 @@ create a new branch named "feature_x" and switch to it using
 
 ### TO-DO
 
-* Add possibility of doing the essential dynamics from MD trajectories
-* Add intefaces( command line and graphical(Tkinter))
+* Create coordinates of eigenvector movements
+* Finish graphical interface

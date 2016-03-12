@@ -24,7 +24,6 @@ def superimpose_models(structure, atom_list):
     """ Function to sumperimpose all the models of the NMR pdb file into
     a reference model, which is assumed to be the first model of the ensemble
     """
-    print("Superimposing different models onto the first one")
     ref_model = structure[0]
     for alt_model in structure:
         # Code from
@@ -62,8 +61,8 @@ def superimpose_models(structure, atom_list):
             # Update the structure by moving all the atoms in
             # this model (not just the ones used for the alignment)
             super_imposer.apply(alt_model.get_atoms())
-        print("RMS(Refernce model, model %i) = %0.2f" %
-              (alt_model.id, super_imposer.rms))
+        # print("RMS(Refernce model, model %i) = %0.2f" %
+        # (alt_model.id, super_imposer.rms))
     return structure
 
 
@@ -72,8 +71,10 @@ def createcordsarray(structure, N, atom_list):
     the covariance matrix afterwards
     """
     n = len(structure)
-    array_stored = np.zeros((n, 3*N))
-    means = np.zeros((1, 3*N))
+    if n > N:
+        n = N
+    array_stored = np.zeros((n, N))
+    means = np.zeros((1, N))
     for i in range(n):
         j = 0
         for residue in structure[i].get_residues():
@@ -129,12 +130,6 @@ def plot_eig(evl, n, pathplots, pdb_id):
     plt.savefig(pathplots+'eig_'+pdb_id+'_plot.png', bbox_inches='tight',
                 dpi=300)
     return plt
-
-# pdb_id = '1jm7'
-pdb_id = '1msf'
-pdbfile = pdb_id + '.ent'
-pdbalignedfile = pdb_id + 'align.pdb'
-
 
 # if not is_NMR_struct(structure):
 #     raise WrongModeException(structure.header['structure_method'], 'NMR')
