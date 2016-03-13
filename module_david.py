@@ -4,10 +4,10 @@ made by DMP.
 """
 ### MODULE 1 ####
 
-
-import Bio.PDB as pdb
 import urllib
 import sys
+import Bio.PDB as pdb
+
 
 
 def store_header_text(filename):
@@ -44,10 +44,13 @@ def merge_the_header(file_pdb, string_header, fileout):
 
 def pdb_code_check(code):
     """Checks if the code provided have 4 letters"""
-    if len(code) == 4:
-        return True
-    else:
+    try:
+        return len(code) == 4
+    except TypeError:
         return False
+    except AttributeError:
+        return False
+
 
 
 
