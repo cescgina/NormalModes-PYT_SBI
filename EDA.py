@@ -2,8 +2,7 @@ import os
 import argparse as arg
 import module_david as mdl
 import Bio.PDB as pdb
-import project_jf as calc
-from scipy import linalg
+import edanalysis as eda
 
 parse_args = arg.ArgumentParser(description="This program performs the \
                                 essential dynamics(ED) analysis of a protein, \
@@ -62,7 +61,7 @@ else:
 if options.infile:
     pdbfile = options.infile
 else:
-    pdbfile = pdb_id + '.ent'
+    pdbfile = 'pdb'+pdb_id + '.ent'
 
 pdbalignedfile = pdb_id + 'align.pdb'
 pdb_superimp = pathname + pdb_id + 'superimp.pdb'
@@ -74,8 +73,6 @@ if not os.path.exists(pathname+pdbfile):
 if not (pdbfile.endswith('pdb') or pdbfile.endswith('ent')):
     raise ValueError('Your input file is not a valid PDB file, please use a \
                      pdb or ent file')
-parser = pdb.PDBParser(QUIET=True)
-structure = parser.get_structure(pdb_id, pdbfile)
 
 atom_list = []
 if options.atom == 'CA':
@@ -83,43 +80,30 @@ if options.atom == 'CA':
 elif options.atom == 'Back':
     atom_list = ['N', 'CA', 'C', 'O']
 
-N = 0
-# Calculate the number of residues that are aa
-for residue in structure[0].get_residues():
-    if residue.has_id('CA'):
-        N += 1
-# Calculate the number of atoms to study, this will depend on which kind
-# of atom the users wants to focus on(CA, backbone or all)
-if atom_list != []:
-    N *= len(atom_list)*3
-# Calculate the number of configurations available, in NMR this is the
-# number of models, in MD the number of time instants
-n = len(structure)
+ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
 
 if options.verb:
     print("Superimposing structures to a reference")
-structure = calc.superimpose_models(structure, atom_list)
+    ED.superimpose_models()
 if options.mode == 'NMR':
-    head = mdl.store_header_text(pdbfile)
+    head = mdl.store_header_text(pathname+pdbfile)
     io = pdb.PDBIO()
-    io.set_structure(structure)
+    io.set_structure(ED.structure)
     io.save(pdb_superimp)
     mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
     os.remove(pdb_superimp)
 
 if options.verb:
     print("Calculating means and coordinates")
-(array_stored, means) = calc.createcordsarray(structure, N, atom_list)
+ED.createcordsarray()
 if options.verb:
     print("Calculating covariance matrix")
-C = calc.cal_cov(array_stored, means)
-if options.verb:
     print("Calculating eigenvalues and eigenvectors")
-evl, evc = linalg.eigh(C)
+ED.cal_cov()
 if options.verb:
     print("Plotting eigenvalues")
 
 n_plot = 30
-if n < n_plot:
-    n_plot = n
-plot = calc.plot_eig(evl, n_plot, pathplots, pdb_id)
+if ED.n < n_plot:
+    n_plot = ED.n
+plot = ED.plot_eig(n_plot, pathplots)

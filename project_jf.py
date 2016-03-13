@@ -71,8 +71,6 @@ def createcordsarray(structure, N, atom_list):
     the covariance matrix afterwards
     """
     n = len(structure)
-    if n > N:
-        n = N
     array_stored = np.zeros((n, N))
     means = np.zeros((1, N))
     for i in range(n):
