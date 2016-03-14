@@ -119,6 +119,18 @@ class EDAnalysis:
                     bbox_inches='tight', dpi=300)
         return fig
 
+    def plot_eig_wosv(self, n_plot, fig=None):
+        """ """
+        if fig is None:
+            fig = plt.figure()
+        valid_evl = self.eigvl[-1:-n_plot-1:-1] / 100
+        plt.plot(range(1, n_plot+1), valid_evl)
+        plt.xlabel('Eigenvector index')
+        plt.ylabel('Eigenvalue ($nm^2$)')
+        # plt.axis([0, n, 0, 3])
+        return fig
+
+
     def is_NMR_struct(self):
         """ Function to ensure the loaded structure is a NMR"""
         return 'nmr' in self.structure.header['structure_method'].lower()

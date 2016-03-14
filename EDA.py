@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse as arg
 import module_david as mdl
 import Bio.PDB as pdb
@@ -52,38 +53,18 @@ if not os.path.exists(pathplots):
 
 if not options.graphical:
     import interface as inter
-    root = inter.tkinter.Tk()
-    my_gui = inter.initial_root(root)
-    root.mainloop()
+    interface = inter.EDA_app()
+    interface.mainloop()
+    sys.exit("The application has been closed.\n")
 
 
 if mdl.pdb_code_check(options.code):
     pdb_id = options.code
-elif not options.graphical:
-    try:
-        pdb_id = inter.interface_code
-    except AttributeError:
-        if inter.pdb_file.endswith('pdb'):
-            pdb_id = inter.pdb_file[:4]
-        elif inter.pdb_file.endswith('ent'):
-            print(inter.pdb_file)
-            pdb_id = inter.pdb_file[3:7]
-        else:
-            raise ValueError('We cannot get the pdb code from the file name.')
-    if not mdl.pdb_code_check(pdb_id):
-        print(pdb_id)
-        raise ValueError('Input code is not a PDB code')
 else:
     raise ValueError('Input code is not a PDB code')
 
 if options.infile:
     pdbfile = options.infile
-elif not options.graphical:
-    try:
-        pdbfile = inter.pdb_file
-        pathname = inter.path_name+'/'
-    except AttributeError:
-        pdbfile = 'pdb'+pdb_id + '.ent'
 else:
     pdbfile = 'pdb'+pdb_id + '.ent'
 
