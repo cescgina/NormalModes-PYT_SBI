@@ -27,7 +27,8 @@ class EDA_app(tkinter.Tk):
                          "pathname": '',
                          "atom": '',
                          "mode": '',
-                         "pathplots": ''}
+                         "pathplots": '',
+                         "RMSD_plot": ''}
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -320,6 +321,10 @@ retrieved.\n".format(pdb_id))
         pathplots = pathname + 'plots/'
         plot = ED.plot_eig_wosv(n_plot)
         self.controller.app_data["plot"] = plot
+
+
+        RMSD_plot = ED.RMSD_res_plot(4, pathplots, origin='interface')
+        self.controller.app_data["RMSD_plot"] = RMSD_plot
         self.controller.show_frame("plot_window")
 
 
@@ -332,16 +337,14 @@ class plot_window(tkinter.Frame):
         eigen_button = tkinter.Button(self, text="Eigen Vectors Plot", command=self.eigen_plot)
         eigen_button.pack()
 
+        RMSD_button = tkinter.Button(self, text="RMSD Plot", command=self.RMSD_plot)
+        RMSD_button.pack()
+
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
         close_button.pack()
 
-        # f = Figure(figsize=(5, 4), dpi=100)
-        # a = f.add_subplot(111)
-        # t = arange(0.0, 3.0, 0.01)
-        # s = sin(2*pi*t)
-        #a.plot(t, s)
-# a tk.DrawingArea
+
     def eigen_plot(self):
         plot = self.controller.app_data["plot"]
         canvas = FigureCanvasTkAgg(plot, master=self)
@@ -351,63 +354,17 @@ class plot_window(tkinter.Frame):
         toolbar = NavigationToolbar2TkAgg(canvas, self)
         toolbar.update()
         canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-
+    def RMSD_plot(self):
+        plot = self.controller.app_data["RMSD_plot"]
+        canvas = FigureCanvasTkAgg(plot, master=self)
+        canvas.show()
+        canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        #
+        toolbar = NavigationToolbar2TkAgg(canvas, self)
+        toolbar.update()
+        canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 ################################################################################
 
-
-
-# if options.infile:
-#     pdbfile = options.infile
-# else:
-#     pdbfile = 'pdb'+pdb_id + '.ent'
-#
-# pdbalignedfile = pdb_id + 'align.pdb'
-# pdb_superimp = pathname + pdb_id + 'superimp.pdb'
-#
-# if not os.path.exists(pathname+pdbfile):
-#     pdbobj = pdb.PDBList()
-#     pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
-#
-# if not (pdbfile.endswith('pdb') or pdbfile.endswith('ent')):
-#     raise ValueError('Your input file is not a valid PDB file, please use a \
-#                      pdb or ent file')
-#
-# atom_list = []
-# if options.atom == 'CA':
-#     atom_list = ['CA']
-# elif options.atom == 'Back':
-#     atom_list = ['N', 'CA', 'C', 'O']
-#
-
-
-# ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
-#
-# if options.verb:
-#     print("Superimposing structures to a reference")
-#     ED.superimpose_models()
-# if options.mode == 'NMR':
-#     head = mdl.store_header_text(pathname+pdbfile)
-#     io = pdb.PDBIO()
-#     io.set_structure(ED.structure)
-#     io.save(pdb_superimp)
-#     mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
-#     os.remove(pdb_superimp)
-#
-# if options.verb:
-#     print("Calculating means and coordinates")
-# ED.createcordsarray()
-# if options.verb:
-#     print("Calculating covariance matrix")
-#     print("Calculating eigenvalues and eigenvectors")
-# ED.cal_cov()
-# if options.verb:
-#     print("Plotting eigenvalues")
-#
-# n_plot = 30
-# if ED.n < n_plot:
-#     n_plot = ED.n
-# plot = ED.plot_eig(n_plot, pathplots)
-#
 
 
 
@@ -415,23 +372,6 @@ class plot_window(tkinter.Frame):
 
 
 if __name__ == "__main__":
-    # root = tkinter.Tk()
-    # my_gui = initial_root(root)
-    # root.mainloop()
-    # if interface_code:
-    #     structure = mdl.from_pdb_code_to_structure(interface_code)
-    #     sys.stderr.write("The structure {} have been retrieved.\n".format(interface_code))
-    #     sys.stderr.write("The structure {} have been loaded \n".format(structure.header['name']))
-    #     root=tkinter.Tk()
-    #     waiting_gui = waiting_window(root)
-    #     root.mainloop()
-    #
-    #
-    # elif pdb_file:
-    #     parser = pdb.PDBParser(QUIET=True)
-    #     pdb_structure = parser.get_structure(pdb_file, pdb_file)
-    #     sys.stderr.write("The file {} have been written\n".format((pdb_file)))
-    # else:
-    #     sys.stderr.write("Neither file or code provided\n")
+
     app = EDA_app()
     app.mainloop()

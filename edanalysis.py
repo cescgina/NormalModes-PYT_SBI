@@ -2,9 +2,10 @@ import copy
 import Bio.PDB as pdb
 import numpy as np
 import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 from scipy import linalg
-matplotlib.use("TkAgg")
+
 
 
 class EDAnalysis:
@@ -176,7 +177,7 @@ class EDAnalysis:
             image_list.append(filename)
         return image_list
 
-    def RMSD_res_plot(self, evc, pathplots, fig=None):
+    def RMSD_res_plot(self, evc, pathplots, fig=None, origin=None):
         """ """
         if fig is None:
             fig = plt.figure()
@@ -229,7 +230,8 @@ class EDAnalysis:
         plt.legend(loc='best', frameon=False)
         filename = ''.join([pathplots, 'eig_', str(evc), '_', self.__PDBid,
                             '_resplot.png'])
-        fig.savefig(filename, bbox_inches='tight', dpi=300)
+        if origin != 'interface':
+            fig.savefig(filename, bbox_inches='tight', dpi=300)
         return fig
 
 
