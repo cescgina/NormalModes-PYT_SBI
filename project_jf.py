@@ -129,8 +129,6 @@ def plot_eig(evl, n, pathplots, pdb_id):
                 dpi=300)
     return plt
 
-# if not is_NMR_struct(structure):
-#     raise WrongModeException(structure.header['structure_method'], 'NMR')
 
 # i = 1  # Eigenvector selected, starting from 1
 # pcord = np.dot(evc[:, -i], (array_stored[0]-means[0, :]))

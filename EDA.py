@@ -1,9 +1,16 @@
+#!/usr/bin/python3
+
 import os
 import sys
 import argparse as arg
 import module_david as mdl
 import Bio.PDB as pdb
 import edanalysis as eda
+# import __main__
+# __main__.pymol_argv = ['pymol', '-qc']
+# import pymol
+# pymol.finish_launching()
+
 
 parse_args = arg.ArgumentParser(description="This program performs the \
                                 essential dynamics(ED) analysis of a protein, \
@@ -101,14 +108,32 @@ if options.mode == 'NMR':
 if options.verb:
     print("Calculating means and coordinates")
 ED.createcordsarray()
+
 if options.verb:
     print("Calculating covariance matrix")
     print("Calculating eigenvalues and eigenvectors")
 ED.cal_cov()
+
 if options.verb:
     print("Plotting eigenvalues")
-
 n_plot = 30
 if ED.n < n_plot:
     n_plot = ED.n
 plot = ED.plot_eig(n_plot, pathplots)
+
+# if options.verb:
+#     print("Generating eigenvector trajectories")
+# image_list = ED.move_structure(10, 1, pathname)
+
+if options.verb:
+    print("Generating RMSD plot for eigenvectors")
+plot = ED.RMSD_res_plot(4, pathplots)
+# for file_img in image_list:
+#     sname = file_img.rstrip(".pdb")
+#     pymol.cmd.load(file_img, sname)
+#     pymol.cmd.disable("all")
+#     pymol.cmd.enable(sname)
+#     pymol.cmd.show("cartoon")
+#     pymol.cmd.png(sname+".png")
+# # Get out!
+# pymol.cmd.quit()

@@ -1,9 +1,10 @@
+import copy
 import Bio.PDB as pdb
 import numpy as np
 import matplotlib
-matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 from scipy import linalg
+matplotlib.use("TkAgg")
 
 
 class EDAnalysis:
@@ -130,24 +131,122 @@ class EDAnalysis:
         # plt.axis([0, n, 0, 3])
         return fig
 
-
     def is_NMR_struct(self):
         """ Function to ensure the loaded structure is a NMR"""
         return 'nmr' in self.structure.header['structure_method'].lower()
 
     def check_mode(self):
         """ """
+        if self.__mode is None:
+            raise WrongModeException('empty')
         if self.__mode == 'NMR' and not self.is_NMR_struct():
             raise WrongModeException(self.__mode)
         elif self.__mode == 'MD' and self.is_NMR_struct():
             raise WrongModeException(self.__mode)
 
+    def move_structure(self, t_max, evc, pathname, t_min=0, step=0.1):
+        """ Returns a new structure with the coordinates calculated from a
+        certain eigenvector"""
+        structure_moved = copy.deepcopy(self.structure)
+        filename = ''.join([pathname, self.__PDBid, '_evc', str(evc), '_0.pdb'])
+        io = pdb.PDBIO()
+        io.set_structure(structure_moved)
+        io.save(filename, OneChainSelect())
+        pcord = np.dot(self.eigvc[:, -evc], (self.coords_array[0] -
+                                             self.means[0, :]))
+        image_list = [filename]
+        nsteps = int((t_max - t_min) / step)
+        for t in np.linspace(t_min, t_max, num=nsteps):
+            if int(t/step) == 0:
+                # This block maybe could be avoided and use the means as
+                # reference
+                continue
+            eig_move = t * pcord * self.eigvc[:, -evc] + self.means
+            j = 0
+            for residue in structure_moved[0].get_residues():
+                if residue.has_id('CA'):
+                    for atoms in self.__atom:
+                        residue[atoms].set_coord(eig_move[0][j:j+3])
+                        j += 3
+            filename = ''.join([pathname, self.__PDBid, '_evc', str(evc), '_',
+                                str(int(t/step)), '.pdb'])
+            io = pdb.PDBIO()
+            io.set_structure(structure_moved)
+            io.save(filename, OneChainSelect())
+            image_list.append(filename)
+        return image_list
+
+    def RMSD_res_plot(self, evc, pathplots, fig=None):
+        """ """
+        if fig is None:
+            fig = plt.figure()
+        for evcn in range(1, evc+1):
+            pcord = 0
+            pmin = 10000000
+            pmax = -1000000
+            for ind in range(self.n):
+                # Look for the maximum and minimum translation
+                pcord = np.dot(self.eigvc[:, -evcn], (self.coords_array[ind] -
+                                                      self.means[0, :]))
+                if pcord > pmax:
+                    pmax = pcord
+                elif pcord < pmin:
+                    pmin = pcord
+            eig_move_max = pmax * self.eigvc[:, -evcn] + self.means
+            eig_move_min = pmin * self.eigvc[:, -evcn] + self.means
+            pcord = np.dot(self.eigvc[:, -evcn], (self.coords_array[0] -
+                                                  self.means[0, :]))
+            # eig_move = pcord * self.eigvc[:, -evcn] + self.means
+            step = len(self.__atom)*3
+            nres = int(self.N / step) - 15 + 1 + 1
+            RMSD_list = np.zeros(nres)
+            j = 0
+            i = 0
+
+            for residue in self.structure[0].get_residues():
+                if residue.has_id('CA'):
+                    j_final = j+7*step
+                    j_init = j-7*step
+                    if j_final > self.N:
+                        break
+                    elif j_init < 0:
+                        j += step
+                        continue
+                    else:
+                        # RMSDvl = eig_move[0][j_init:j_final] - \
+                        #      self.coords_array[0][j_init:j_final]
+                        RMSDvl = eig_move_max[0][j_init:j_final] - \
+                           eig_move_min[0][j_init:j_final]
+                        j += step
+                        RMSD = np.sqrt(np.sum(RMSDvl**2)/len(RMSDvl))
+                        RMSD_list[i] = RMSD
+                        i += 1
+            plt.plot(range(7, nres+7), RMSD_list,
+                     label="EV {:d}".format(evcn))
+        plt.ylabel('RMSD ($\AA$)')
+        plt.xlabel('Residue number')
+        # plt.axis([0, n, 0, 3])
+        plt.legend(loc='best', frameon=False)
+        filename = ''.join([pathplots, 'eig_', str(evc), '_', self.__PDBid,
+                            '_resplot.png'])
+        fig.savefig(filename, bbox_inches='tight', dpi=300)
+        return fig
+
+
+class OneChainSelect(pdb.Select):
+    """
+    Custom class derived from Bio.PDB.Select to write only one model to a PDB
+    file, used only to visualize the trajectories of the eigenvectors
+    """
+    def accept_model(self, model):
+        return model.get_id() == 0
+
 
 class WrongModeException(Exception):
-    def __init__(self, input_class, mode):
+    def __init__(self, mode):
         self.mode = mode
 
     def __str__(self):
         """ 2"""
-        return "You have selected mode %s, please input an appropiate \
-            structure " % (self.mode)
+        return ("Your mode selection is {:s}, please input an appropiate "
+                "structure").format(self.mode)
