@@ -27,6 +27,7 @@ parse_args.add_argument('-c', '--code', dest="code", action="store",
                         default=None, help="Input pdb code for the protein you \
                         want to study")
 parse_args.add_argument('-i', '--input', dest="infile", action="store",
+                        default=None,
                         help="Input pdb file with either NMR or MD data")
 parse_args.add_argument('-m', '--mode', dest='mode', action="store",
                         choices=['NMR', 'MD'], help="Select wether you want to \
@@ -64,7 +65,9 @@ if not options.graphical:
     interface.mainloop()
     sys.exit("The application has been closed.\n")
 
-
+if options.mode == 'MD' and options.infile is None:
+    raise ValueError(('To use the MD mode you need to input a trajectory in '
+                      'a PDB file'))
 if mdl.pdb_code_check(options.code):
     pdb_id = options.code
 else:
@@ -83,14 +86,17 @@ if not os.path.exists(pathname+pdbfile):
     pdbobj.retrieve_pdb_file(pdb_id, pdir=pathname)
 
 if not (pdbfile.endswith('pdb') or pdbfile.endswith('ent')):
-    raise ValueError('Your input file is not a valid PDB file, please use a \
-                     pdb or ent file')
+    raise ValueError(('Your input file is not a valid PDB file, please use a '
+                      'pdb or ent file'))
 
 atom_list = []
 if options.atom == 'CA':
     atom_list = ['CA']
 elif options.atom == 'Back':
     atom_list = ['N', 'CA', 'C', 'O']
+
+if options.verb:
+    print("Initializing analysis information")
 
 ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
 
