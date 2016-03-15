@@ -1,3 +1,14 @@
+"""This module is part of the EDA(essential dynamics analysis) program, it
+provides several classes to perform the EDA.
+
+Classes:
+    EDAnalysis -> It is the main class, provides an easy interface to
+    carry out ED
+    OneChainSelect -> Class derived from the Bio.PDB.Select class,
+    allows you to write PDBs with a single model
+    WrongModeException -> Specific Exception class that indicates a misuse
+    of the EDA program
+"""
 import copy
 import Bio.PDB as pdb
 import numpy as np
@@ -9,8 +20,58 @@ from scipy import linalg
 
 
 class EDAnalysis:
-    """Implements an essential dynamics analysis..."""
+    """Implements an essential dynamics analysis(EDA).
+
+    Methods:
+
+        __init__ -> Set the basic attributes of the EDAnalysis
+        get_id -> Return the id of the object (as PDB code)
+        get_mode -> Return the mode of the object
+        get_atom -> Return the atom list chosen for the analysis
+        superimpose_models- > Superimpose two or more structures
+        createcordsarray -> Calculate the coordinates for the diferent models
+        cal_cov -> Calculate the covariance matrix
+        plot_eig -> Plot the values of the principal eigenvectors of the
+             covariance matrix
+        plot_eig_wosv -> Same as plot_eig but adapted to some requirements of
+            the Tkinter GUI
+        is_NMR_struct -> Check if the structure loaded is was obtained by NMR
+        check_mode -> Check if the mode selected is consisted with the data
+        move_structure -> Move the structure along a certain eigenvector
+        RMSD_res_plot -> Create a plot with the distance of the residues along
+            some eigenvectors
+
+    Attributes:
+
+        PDBid(private) -> String with the PDB code of the structure anlyzed
+        mode(private) -> String with the mode of the anlysis (for now NMR or MD)
+        atom(private) -> List with the atoms to study
+        structure -> Bio.PDB.Structure object on which the analysis is performed
+        n -> Number of models or trajectories (in NMR or MD modes,respectively)
+        N -> Number of coordinates of the analysis
+        coords_array -> nxN Numpy array with the N coordinates for the n models
+        means -> 1xN Numpy array with the means of the N coordinates over the n
+            models
+        C -> NxN Numoy array that contains the covariance matrix
+        eigvc -> Numpy array with the eigenvectors of the covariance matrix
+        eigvl -> Numpy array with the eigenvalues of the covariance matrix
+    """
+
     def __init__(self, PDBid, mode, atom, pdbfile):
+        """Set the basic attributes of the EDAnalysis class.
+
+        Set the basic attributes of the EDAnalysis class, calculate the number
+        of coordinates of interest, the number of models, load the PDB file with
+        the structure to analyze and check the consistency of the data provided
+        by the user
+
+        Args:
+            PDBid is a string with a PDB code
+            mode is a string with value NMR or MD
+            atom is a list with the particular atoms to focus on the analysis
+            pdbfile is the path to pdbfile to load
+        """
+
         self.__PDBid = PDBid
         self.__mode = mode
         self.__atom = atom
@@ -32,23 +93,33 @@ class EDAnalysis:
         self.check_mode()
 
     def get_id(self):
-        """ """
+        """Return the id of the EDAnalysis as a string."""
         return self.__PDBid
 
     def get_mode(self):
-        """ """
+        """Return the selected mode of the EDAnalysis as a string."""
         return self.__mode
 
     def get_atom(self):
-        """ """
+        """Return the list of atoms of interest to the EDAnalysis."""
         return self.__atom
 
     def superimpose_models(self, reference=0):
-        """ reference is an integer that indicates the reference model"""
+        """Superimpose two or more structures.
+
+        Superimpose two or more structures by using the Bio.PDB.Superimposer
+        class.
+
+        Args:
+            reference is an int with the reference model (default=0)
+        """
+
         ref_model = self.structure[reference]
         for alt_model in self.structure:
             ref_atoms = []
             alt_atoms = []
+            # Iterate over the structure method to obtain all atoms of interest
+            # for the analysis and superimposes the structures using them
             for (ref_chain, alt_chain) in zip(ref_model, alt_model):
                 for ref_res, alt_res in \
                         zip(ref_chain, alt_chain):
@@ -81,7 +152,7 @@ class EDAnalysis:
                 super_imposer.apply(alt_model.get_atoms())
 
     def createcordsarray(self):
-        """ """
+        """Calculate the coordinates for the diferent models."""
         array_stored = np.zeros((self.n, self.N))
         means = np.zeros((1, self.N))
         i = 0
@@ -99,7 +170,13 @@ class EDAnalysis:
         self.means = means
 
     def cal_cov(self):
-        """ """
+        """Calculate the covariance matrix.
+
+        Calculate the covariance matrix from the coordinates caculated with the
+        createcordsarray method, the diagonalize the covariance matrix using
+        scipy.linalg.eigh
+        """
+
         C = np.zeros((self.N, self.N))
         for x in self.coords_array:
             x_prod = x - self.means
@@ -109,35 +186,46 @@ class EDAnalysis:
         self.eigvl, self.eigvc = linalg.eigh(C)
 
     def plot_eig(self, n_plot, pathplots, fig=None):
-        """ """
+        """Plot the values of the principal eigenvectors of the cov. matrix.
+
+        Args:
+            n_plot -> Int with the number of eigvalues to plot
+            pathplots -> Directory where the plot will be stored
+            fig -> Matplotlib figure handle, the default in None, so a new
+                figure handle will be created
+
+        Returns the figure handle that contains the plot
+        """
+
         if fig is None:
             fig = plt.figure()
         valid_evl = self.eigvl[-1:-n_plot-1:-1] / 100
         plt.plot(range(1, n_plot+1), valid_evl)
         plt.xlabel('Eigenvector index')
         plt.ylabel('Eigenvalue ($nm^2$)')
-        # plt.axis([0, n, 0, 3])
         fig.savefig(pathplots+'eig_'+self.__PDBid+'_plot.png',
                     bbox_inches='tight', dpi=300)
         return fig
 
     def plot_eig_wosv(self, n_plot, fig=None):
-        """ """
+        """Essentially the same as plot_eig, just adapted to the Tkinter GUI."""
         if fig is None:
             fig = plt.figure()
         valid_evl = self.eigvl[-1:-n_plot-1:-1] / 100
         plt.plot(range(1, n_plot+1), valid_evl)
         plt.xlabel('Eigenvector index')
         plt.ylabel('Eigenvalue ($nm^2$)')
-        # plt.axis([0, n, 0, 3])
         return fig
 
     def is_NMR_struct(self):
-        """ Function to ensure the loaded structure is a NMR"""
+        """Check wether the loaded structure is a NMR"""
         return 'nmr' in self.structure.header['structure_method'].lower()
 
     def check_mode(self):
-        """ """
+        """Check the consistency betweent the mode chosen by the user and the
+        data provided.
+        """
+
         if self.__mode is None:
             raise WrongModeException('empty')
         if self.__mode == 'NMR' and not self.is_NMR_struct():
@@ -146,22 +234,31 @@ class EDAnalysis:
             raise WrongModeException(self.__mode)
 
     def move_structure(self, t_max, evc, pathname, t_min=0, step=0.1):
-        """ Returns a new structure with the coordinates calculated from a
-        certain eigenvector"""
+        """Move the structure along a certain eigenvector.
+
+        Project the coordinates of the stucture onto an eigenvector and then
+        uses this projection to move the structure along this eigenvector,
+        creating a PDB file with the now moved coordinates
+
+        Args:
+            t_max -> Int with the final time of the trajectory
+            evc -> Int with the eigenvector to use, raise a ValueError if it is
+                not between 1 and N
+            pathname -> Directory where to store the pdb files generated
+            t_min -> Int with initial time of the trajectory (default=0)
+            step -> Float with the time-step of the trajectory (default=0.1)
+
+        Returns a list with all the files generated
+        """
+
+        if evc < 1 or evc > self.N:
+            raise ValueError('Eigenvector index has to be between 1 and N')
         structure_moved = copy.deepcopy(self.structure)
-        filename = ''.join([pathname, self.__PDBid, '_evc', str(evc), '_0.pdb'])
-        io = pdb.PDBIO()
-        io.set_structure(structure_moved)
-        io.save(filename, OneChainSelect())
         pcord = np.dot(self.eigvc[:, -evc], (self.coords_array[0] -
                                              self.means[0, :]))
-        image_list = [filename]
+        image_list = []
         nsteps = int((t_max - t_min) / step)
         for t in np.linspace(t_min, t_max, num=nsteps):
-            if int(t/step) == 0:
-                # This block maybe could be avoided and use the means as
-                # reference
-                continue
             eig_move = t * pcord * self.eigvc[:, -evc] + self.means
             j = 0
             for residue in structure_moved[0].get_residues():
@@ -177,8 +274,26 @@ class EDAnalysis:
             image_list.append(filename)
         return image_list
 
+
+
+
     def RMSD_res_plot(self, evc, pathplots, fig=None, origin=None):
-        """ """
+        """Create a plot with the distance of the residues along
+        some eigenvectors
+
+        Project the structure over some eigenvectors and calculte new
+        coordinates, calculate the RMSD between the new and old coordinates by
+        using a shifting-window RMS method (with a window of 15 residues) and
+        plot the RMSD against the residue number
+
+        Args:
+            evc -> Int with the maximum eigenvector to include in the plot
+            pathplots -> Directory to store the plot
+            fig -> Matplotlib figure handle, the default in None, so a new
+                figure handle will be created
+
+        Returns the figure handle that contains the plot
+        """
         if fig is None:
             fig = plt.figure()
         for evcn in range(1, evc+1):
@@ -197,7 +312,6 @@ class EDAnalysis:
             eig_move_min = pmin * self.eigvc[:, -evcn] + self.means
             pcord = np.dot(self.eigvc[:, -evcn], (self.coords_array[0] -
                                                   self.means[0, :]))
-            # eig_move = pcord * self.eigvc[:, -evcn] + self.means
             step = len(self.__atom)*3
             nres = int(self.N / step) - 15 + 1 + 1
             RMSD_list = np.zeros(nres)
@@ -205,6 +319,8 @@ class EDAnalysis:
             i = 0
 
             for residue in self.structure[0].get_residues():
+                # Calculate the RMSD for each residue using the shifting-window
+                # RMS method with a window size of 15
                 if residue.has_id('CA'):
                     j_final = j+7*step
                     j_init = j-7*step
@@ -214,19 +330,16 @@ class EDAnalysis:
                         j += step
                         continue
                     else:
-                        # RMSDvl = eig_move[0][j_init:j_final] - \
-                        #      self.coords_array[0][j_init:j_final]
                         RMSDvl = eig_move_max[0][j_init:j_final] - \
                            eig_move_min[0][j_init:j_final]
                         j += step
-                        RMSD = np.sqrt(np.sum(RMSDvl**2)/len(RMSDvl))
+                        RMSD = np.sqrt(np.sum(RMSDvl**2)/int(len(RMSDvl)/step))
                         RMSD_list[i] = RMSD
                         i += 1
             plt.plot(range(7, nres+7), RMSD_list,
                      label="EV {:d}".format(evcn))
         plt.ylabel('RMSD ($\AA$)')
         plt.xlabel('Residue number')
-        # plt.axis([0, n, 0, 3])
         plt.legend(loc='best', frameon=False)
         filename = ''.join([pathplots, 'eig_', str(evc), '_', self.__PDBid,
                             '_resplot.png'])
@@ -245,10 +358,11 @@ class OneChainSelect(pdb.Select):
 
 
 class WrongModeException(Exception):
+    """Specific Exception class that indicates a misuse of the EDA program."""
+
     def __init__(self, mode):
         self.mode = mode
 
     def __str__(self):
-        """ 2"""
         return ("Your mode selection is {:s}, please input an appropiate "
                 "structure").format(self.mode)
