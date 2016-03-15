@@ -1,14 +1,14 @@
 import tkinter
-import module_david as mdl
 import os.path
 import os
 import sys
 from tkinter import filedialog
+import module_david as mdl
 import matplotlib
-matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import Bio.PDB as pdb
 import edanalysis as eda
+matplotlib.use("TkAgg")
 
 # implement the default mpl key bindings
 
@@ -31,7 +31,7 @@ class EDA_app(tkinter.Tk):
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
-        self.title("EDA: by JF Gilabert & D Mas")
+        self.title("PyEDA: by JF Gilabert & D Mas")
         self.geometry("600x600")
         container = tkinter.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -82,7 +82,7 @@ automatically by the software.", font=text_fornt)
 
         button1 = tkinter.Button(self, text="Start the Analysis",
                             command=lambda: controller.show_frame("initial_root"))
-        button2 = tkinter.Button(self, text="About EDA",
+        button2 = tkinter.Button(self, text="About PyEDA",
                             command=lambda: controller.show_frame("About_EDA"))
         button1.pack()
         button2.pack()
@@ -230,7 +230,7 @@ class About_EDA(tkinter.Frame):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         label1 = tkinter.Label(self, text="Help and Documentation", font=TITLE_FONT)
-        label2 = tkinter.Label(self, text="EDA is a python based software \
+        label2 = tkinter.Label(self, text="PyEDA is a python based software \
 that performs a Normal Mode Analysis \n using a Essential Dynamics Simplification.\
 ", font=text_fornt)
         label3 = tkinter.Label(self, text="You can perform the analysis from a \
