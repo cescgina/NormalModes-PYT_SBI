@@ -1,3 +1,25 @@
+"""
+Interface Module:
+This module is part of the PyEDA program. It provides several classes to use
+PyEDA with a graphical Interface using Tkinter. It also acts as a main script
+to drive the EDA analyses.
+
+Classes:
+    EDA_app -> It is the main window where all the other frames are projected.
+    inherited from tkinter.Tk.
+    StartPage -> Is the first frame the users sees after the execution of PyEDA.
+    It leads to the loading data frame or the "about us" page.
+    inherited from tkinter.Frame
+    initial_root -> Acts as a loading data frame. Is where the user interacts
+    with the program by entering the required data and options.
+    inherited from tkinter.Frame
+    waiting_window -> Is where the analysis is taking place. Incorporates the
+    same steps that the PyEDA.py CLI. Leads to the plotting frame.
+    inherited from tkinter.Frame
+    plot_window -> It shows buttons to the different ploting capabilities of
+    the software. It integrates matplotlib in the Tkinter window.
+"""
+
 import tkinter
 import os.path
 import os
@@ -18,7 +40,11 @@ TITLE_FONT = ("Helvetica", 18, "bold")
 text_fornt = ("Courier", 14)
 ###############################################################################
 class EDA_app(tkinter.Tk):
-
+    """
+    It has the title information and it keeps the app.data dictionary where the
+    diferent frames can share data. It also have a method to switch between
+    frames. This is useful to maintain a program-like expirience.
+    """
     def __init__(self, *args, **kwargs):
         tkinter.Tk.__init__(self, *args, **kwargs)
         self.app_data = {"filename": '',
@@ -34,7 +60,7 @@ class EDA_app(tkinter.Tk):
         # on top of each other, then the one we want visible
         # will be raised above the others
         self.title("PyEDA: by JF Gilabert & D Mas")
-        self.geometry("600x600")
+        #self.geometry("600x600")
         container = tkinter.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -335,6 +361,7 @@ class plot_window(tkinter.Frame):
     def __init__(self, parent, controller):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
+        self.canvas = None
         eigen_button = tkinter.Button(self, text="Eigen Vectors Plot", command=self.eigen_plot)
         eigen_button.pack()
 
@@ -343,27 +370,34 @@ class plot_window(tkinter.Frame):
 
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
-        close_button.pack()
+        close_button.pack(side=tkinter.BOTTOM)
 
 
     def eigen_plot(self):
+        if self.canvas != None:
+            self.canvas.get_tk_widget().destroy()
+            self.toolbar.destroy()
         plot = self.controller.app_data["plot"]
-        canvas = FigureCanvasTkAgg(plot, master=self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.canvas = FigureCanvasTkAgg(plot, master=self)
+        self.canvas.show()
+        self.canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
         #
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.toolbar = NavigationToolbar2TkAgg(self.canvas, self)
+        self.toolbar.update()
+        self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
     def RMSD_plot(self):
+        if self.canvas != None:
+            self.canvas.get_tk_widget().destroy()
+            self.toolbar.destroy()
         plot = self.controller.app_data["RMSD_plot"]
-        canvas = FigureCanvasTkAgg(plot, master=self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.canvas = FigureCanvasTkAgg(plot, master=self)
+        self.canvas.show()
+        self.canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
         #
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.toolbar = NavigationToolbar2TkAgg(self.canvas, self)
+        self.toolbar.update()
+        self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+
 ################################################################################
 
 
