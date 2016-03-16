@@ -41,11 +41,24 @@ text_fornt = ("Courier", 14)
 ###############################################################################
 class EDA_app(tkinter.Tk):
     """
-    It has the title information and it keeps the app.data dictionary where the
+    It is the Tk window. It has the title information and it keeps the app.data dictionary where the
     diferent frames can share data. It also have a method to switch between
     frames. This is useful to maintain a program-like expirience.
+
+    Methods:
+        show_frame -> It's the only method in this class and it is used to
+        switch to a specific frame whereever frame the user is.
+
+    Attributes:
+        self.app_data -> It is the data Hub for the whole application. Is where
+        the data is kept when switching from frame to frame
+        self.title -> It sets the title of the application.
+        self.frames -> It is a dictionary that contains the frame instances all
+        preloaded from the begining. It is used by show_frame method to
+        get redirection to specific frames.
     """
     def __init__(self, *args, **kwargs):
+        """Constructor"""
         tkinter.Tk.__init__(self, *args, **kwargs)
         self.app_data = {"filename": '',
                          "pdbid": '',
@@ -67,53 +80,72 @@ class EDA_app(tkinter.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, initial_root, waiting_window, About_EDA, plot_window):
+        for F in (StartPage, initial_root, waiting_window, About_EDA, \
+            plot_window):
             page_name = F.__name__
             frame = F(container, self)
             self.frames[page_name] = frame
-            # put all of the pages in the same location;
-            # the one on the top of the stacking order
-            # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
-        ### Adding the plot page.
+
 
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
-        '''Show a frame for the given page name'''
+        """Show a frame for the given page name"""
         frame = self.frames[page_name]
         frame.tkraise()
 
+
 ###############################################################################
 class StartPage(tkinter.Frame):
+    """
+    It is the Starting page. It has few information displayed about the program.
+    it let the user go to the analysis or the "about us" page.
+
+    Methods:
+        No methods implemented
+
+    Attributes:
+        self.controller -> It is a reference to the main Tk window.
+    """
 
     def __init__(self, parent, controller):
+        """
+        Frame Constructor. We use the controller atribute to refer to the
+        Tk window that is "controling" this frame. This way it can acces
+        to the main window methods.
+        """
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         title = tkinter.Label(self, text="Welcome to the ED Analyser.",
                       font=("Helvetica", 25))
-        title.pack(side=tkinter.TOP)
+        title.grid(row=1, column=0, columnspan=3)
         photo = tkinter.PhotoImage(file="image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
-        w.pack(side=tkinter.TOP)
-        subtitle = tkinter.Label(self, text="This Software is the result for a \
-project of Structual Bioinformatics \n and Introduction to Python from the Master \
-of Science in Bioinformatics \n at Universitat Pompeu Fabra. We use the Essential \
-Dynamics approach \n in order to analyse the Normal Modes of NMR structures and \
-Molecular \n Dynamics. The input format is pdb although it  can be \n also retrieved \
-automatically by the software.", font=text_fornt)
+        w.grid(row=0, column=0, columnspan=3)
+        subtitle = tkinter.Label(self, text="""
+        This Software is the result for a project of Structual Bioinformatics
+        and Introduction to Python from the Master of Science in Bioinformatics
+        at Universitat Pompeu Fabra. We use the Essential Dynamics approach
+        in order to analyse the Normal Modes of NMR structures and Molecular
+        Dynamics. The input format is pdb although it  can be also retrieved
+        automatically by the software.
+        """, font=text_fornt, justify=tkinter.LEFT)
         subtitle2 = tkinter.Label(self, text="Authors: JF Gilabert & D Mas",\
          font=("Helvetica", 22, "bold"))
-        subtitle.pack(side=tkinter.TOP)
-        subtitle2.pack(side=tkinter.TOP)
+        subtitle2.grid(row=2, column=0, columnspan=3)
+        subtitle.grid(row=3, column=0, columnspan=3)
+
 
         button1 = tkinter.Button(self, text="Start the Analysis",
                             command=lambda: controller.show_frame("initial_root"))
         button2 = tkinter.Button(self, text="About PyEDA",
                             command=lambda: controller.show_frame("About_EDA"))
-        button1.pack()
-        button2.pack()
+        button3 = tkinter.Button(self, text="Close App", command=self.quit)
+        button1.grid(row=5, column=0)
+        button2.grid(row=5, column=1)
+        button3.grid(row=5, column=2)
 
 
 
@@ -121,84 +153,122 @@ automatically by the software.", font=text_fornt)
 
 class initial_root(tkinter.Frame):
     """
-    This is the initial page of the application where the files are loaded
+    This is the initial page of the application where the files are loaded and
+    where the options can be selected.
+
+    Methods:
+        No methods implemented
+
+    Attributes:
+        self.controller -> It is a reference to the main Tk window.
     """
     def __init__(self, parent, controller):
+        """
+        Frame Constructor. We use the controller atribute to refer to the
+        Tk window that is "controling" this frame. This way it can acces
+        to the main window methods.
+        There are diverse types of buttons used to load the data.
+        """
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         ### title
         title = tkinter.Label(self, text="Welcome to the ED Analyser.",
-                      font=("Helvetica", 25))
-        title.pack(side=tkinter.TOP)
+                      font=("Helvetica", 25), justify= "center")
+        title.grid(row=1, column=0, columnspan=5)
         ### photo
         photo = tkinter.PhotoImage(file="image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
-        w.pack(side=tkinter.TOP)
+        w.grid(row=0, column=0, columnspan=5)
         ### subtitle
-        subtitle = tkinter.Label(self, text="Please, enter a file or a pdb code.",
+        subtitle = tkinter.Label(self, text="Enter a file or a pdb code:", \
                                  font=("Helvetica", 20))
-        subtitle.pack(side=tkinter.TOP)
+        subtitle2 = tkinter.Label(self, text="Parameters:", \
+                                 font=("Helvetica", 20))
+        subtitle.grid(row=2, column=0, columnspan=2)
+        subtitle2.grid(row=2, column=2, columnspan=3)
         ### pdb code entry
-        labelframe_code = tkinter.Frame(self, bd=2)
-        labelframe_code.pack(side=tkinter.TOP)
         self.entry_var = tkinter.StringVar()
             ### entry
-        label = tkinter.Label(labelframe_code, text="Enter a pdb code:",
-                              font=("Helvetica", 15), width=40)
-        label.pack(side=tkinter.TOP)
-        self.entry = tkinter.Entry(labelframe_code, bd=2, width=8, textvariable=self.entry_var)
-        self.entry.pack(side=tkinter.TOP)
+        label = tkinter.Label(self, text="pdb code:",
+                              font=("Helvetica", 15))
+        label.grid(row=3, column=0)
+        self.entry = tkinter.Entry(self, bd=2, width=5, \
+            textvariable=self.entry_var)
+        self.entry.grid(row=4, column=0)
             ### check button
-        b = tkinter.Button(labelframe_code, text="Check",
+        b = tkinter.Button(self, text="Check",
                            command=self.check_uniprot_accession_code)
-        b.pack(side=tkinter.TOP)
+        b.grid(row=5, column=0)
             ### get pdb button
-        get = tkinter.Button(labelframe_code, text="Get PDB", command=self.get_pdb)
-        get.pack(side=tkinter.TOP)
+        get = tkinter.Button(self, text="Get PDB", command=self.get_pdb)
+        get.grid(row=6, column=0, columnspan=2)
 
             ### add a file button
-        add = tkinter.Button(labelframe_code, text="Add a pdb file", command=self.select_file)
-        add.pack(side=tkinter.TOP)
-        ### choose atoms
-        self.m = tkinter.StringVar()
-        m1 = tkinter.Radiobutton( self, text="NMR", variable = self.m, value = 'NMR', command = self.select_m)
-        m2 = tkinter.Radiobutton( self, text="MD", variable = self.m, value = 'MD', command = self.select_m )
+        add = tkinter.Button(self, text="Add a pdb file", \
+            command=self.select_file)
+        add.grid(row=4, column=1, rowspan=2)
 
-        m1.pack( side=tkinter.TOP)
-        m2.pack( side=tkinter.TOP )
+        label4 = tkinter.Label(self, text="Go Back:",
+                              font=("Helvetica", 15))
+        label4.grid(row=7, column=0, columnspan=2)
+        ### choose atoms
+        label2 = tkinter.Label(self, text="Mode:",
+                              font=("Helvetica", 15))
+        label2.grid(row=3, column=2, columnspan=3)
+        self.m = tkinter.StringVar()
+        m1 = tkinter.Radiobutton( self, text="NMR", variable = self.m, \
+            value = 'NMR', command = self.select_m)
+        m2 = tkinter.Radiobutton( self, text="MD", variable = self.m, \
+            value = 'MD', command = self.select_m )
+
+        m1.grid( row=4, column=2)
+        m2.grid( row=4, column=3, columnspan=2)
 
         self.label_m = tkinter.Label(self)
-        self.label_m.pack()
+        self.label_m.grid(row=5, column=2, columnspan=3)
+
         ### choose mode
+        label3 = tkinter.Label(self, text="Atoms:",
+                              font=("Helvetica", 15))
+        label3.grid(row=6, column=2, columnspan=3)
         self.var = tkinter.StringVar()
-        r1 = tkinter.Radiobutton( self, text="Only CA", variable = self.var, value = 'CA', command = self.select)
-        r2 = tkinter.Radiobutton( self, text="Backbone atoms", variable = self.var, value = 'Back', command = self.select )
-        r3 = tkinter.Radiobutton( self, text="all", variable = self.var, value = 'all', command = self.select )
+        r1 = tkinter.Radiobutton( self, text="Only CA", variable = self.var,\
+            value = 'CA', command = self.select_a)
+        r2 = tkinter.Radiobutton( self, text="Backbone", \
+            variable = self.var, value = 'Back', command = self.select_a )
+        r3 = tkinter.Radiobutton( self, text="All", variable = self.var, \
+            value = 'all', command = self.select_a )
 
-        r1.pack( side=tkinter.TOP)
-        r2.pack( side=tkinter.TOP )
-        r3.pack( side=tkinter.TOP )
+        r1.grid( row=7, column=2)
+        r2.grid( row=7, column=3)
+        r3.grid( row=7, column=4)
 
-        self.label = tkinter.Label(self)
-        self.label.pack()
+        self.label_a = tkinter.Label(self)
+        self.label_a.grid(row=8, column=2, columnspan=3)
+
+
 
         ### start page button
-        button = tkinter.Button(self, text="Go to the start page",
+        button = tkinter.Button(self, text="Start page",
                            command=lambda: controller.show_frame("StartPage"))
-        button.pack()
+        button.grid( row=8, column=0)
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
-        close_button.pack()
-
+        close_button.grid( row=8, column=1)
+        ### Weighting loop
+        i=0
+        while (i<4):
+            self.grid_columnconfigure(i, weight=1)
+            i+=1
     def select_m(self):
         selection = "You selected the option %s" %self.m.get()
         self.label_m.config(text=selection)
         self.controller.app_data["mode"] = self.m.get()
 
-    def select(self):
+    def select_a(self):
         selection = "You selected the option %s" %self.var.get()
-        self.label.config(text=selection)
+        self.label_a.config(text=selection)
         self.controller.app_data["atom"] = self.var.get()
 
     def check_uniprot_accession_code(self):
@@ -211,10 +281,8 @@ class initial_root(tkinter.Frame):
     def get_pdb(self):
         interface_code = str(self.entry_var.get())
         if mdl.pdb_code_check(interface_code):
-            #structure = mdl.from_pdb_code_to_structure(interface_code)
-            #sys.stderr.write("The structure {} have been retrieved.\n".format(interface_code))
             self.controller.app_data["pdbid"] = interface_code
-            self.controller.app_data["pdbfilename"] = 'pdb'+interface_code+ '.ent'
+            self.controller.app_data["pdbfilename"] = 'pdb'+interface_code+'.ent'
             self.controller.app_data["pathname"] = 'pdbfiles/'
             self.controller.app_data["pathplots"] = 'plots/'
             if not os.path.exists(self.controller.app_data["pathname"]):
@@ -258,29 +326,43 @@ class About_EDA(tkinter.Frame):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         label1 = tkinter.Label(self, text="Help and Documentation", font=TITLE_FONT)
-        label2 = tkinter.Label(self, text="PyEDA is a python based software \
-that performs a Normal Mode Analysis \n using a Essential Dynamics Simplification.\
-", font=text_fornt)
-        label3 = tkinter.Label(self, text="You can perform the analysis from a \
-pdb file or you can introduce the \n desired pdb code and the program will\
-retrieve the pdb file for you if \n you have internet connection.", font=text_fornt)
-        label4 = tkinter.Label(self, text="The Program will output a set of files \
- and plots. First, it will \n generate a superimposed pdb files with all the NMR models\
- or MD frames. \n After that it will calculate the covariance matrix of the coordinates \n \
- and will output a plot of the eigenvalues derived from the \n diagonalitzation\
- of the matrix. Finally, it will output a pdb file\n with the moved coordinates.",\
-        font=text_fornt)
-        label1.pack(side="top", fill="x", pady=10)
-        label2.pack(side="top", fill="x", pady=10)
-        label3.pack(side="top", fill="x", pady=10)
-        label4.pack(side="top", fill="x", pady=10)
+        label2 = tkinter.Label(self, text="""
+        PyEDA is a python based software that performs a Normal Mode Analysis
+        using an Essential Dynamics approach.
+        """, font=text_fornt, justify=tkinter.LEFT)
+        label3 = tkinter.Label(self, text="""
+        You can perform the analysis from a pdb file or you can introduce the
+        desired pdb code and the program will retrieve the pdb file for you if
+        you have internet connection.
+        """, font=text_fornt, justify=tkinter.LEFT)
+        label4 = tkinter.Label(self, text="""
+        The Program will output a set of files and plots. First, it will
+        generate a superimposed pdb files with all the NMR models or MD frames.
+        After that it will calculate the covariance matrix of the coordinates
+        and will output a plot of the eigenvalues derived from the
+        diagonalitzation of the matrix. Finally, it will output a pdb file
+        with the moved coordinates.
+        """, font=text_fornt, justify=tkinter.LEFT)
+        label1.grid(row=0,column=0,columnspan=3)
+        label2.grid(row=1,column=0,columnspan=3)
+        label3.grid(row=2,column=0,columnspan=3)
+        label4.grid(row=3,column=0,columnspan=3)
+
         button = tkinter.Button(self, text="Go to the start page",
                            command=lambda: controller.show_frame("StartPage"))
-        button.pack()
+        button.grid(row=4,column=0)
+
         button1 = tkinter.Button(self, text="Start the Analysis",
                             command=lambda: controller.show_frame("initial_root"))
-        button1.pack()
+        button1.grid(row=4,column=1)
 
+        close_button = tkinter.Button(self, text="Close", command=self.quit)
+        close_button.grid(row=4,column=2)
+        ### Weighting loop
+        i=0
+        while (i<4):
+            self.grid_rowconfigure(i, weight=1)
+            i+=1
 ################################################################################
 
 class waiting_window(tkinter.Frame):
