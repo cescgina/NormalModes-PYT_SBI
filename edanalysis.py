@@ -18,7 +18,6 @@ from matplotlib import pyplot as plt
 from scipy import linalg
 
 
-
 class EDAnalysis:
     """Implements an essential dynamics analysis(EDA).
 
@@ -57,13 +56,13 @@ class EDAnalysis:
         eigvl -> Numpy array with the eigenvalues of the covariance matrix
     """
 
-    def __init__(self, PDBid, mode, atom, pdbfile):
+    def __init__(self, PDBid, mode, atom, pdbfile, reference=None):
         """Set the basic attributes of the EDAnalysis class.
 
         Set the basic attributes of the EDAnalysis class, calculate the number
-        of coordinates of interest, the number of models, load the PDB file with
-        the structure to analyze and check the consistency of the data provided
-        by the user
+        of coordinates of interest, the number of models, load the PDB file
+        with the structure to analyze and check the consistency of the data
+        provided by the user
 
         Args:
             PDBid is a string with a PDB code
@@ -75,6 +74,11 @@ class EDAnalysis:
         self.__PDBid = PDBid
         self.__mode = mode
         self.__atom = atom
+        if reference is not None:
+            if self.__mode != 'MD':
+                raise WrongModeException(self.__mode)
+        self.reference = reference
+
         parser = pdb.PDBParser(QUIET=True)
         self.structure = parser.get_structure(self.__PDBid, pdbfile)
         N = 0
@@ -104,17 +108,23 @@ class EDAnalysis:
         """Return the list of atoms of interest to the EDAnalysis."""
         return self.__atom
 
-    def superimpose_models(self, reference=0):
+    def superimpose_models(self, reference=None, reference_model=0):
         """Superimpose two or more structures.
 
         Superimpose two or more structures by using the Bio.PDB.Superimposer
         class.
 
         Args:
-            reference is an int with the reference model (default=0)
+            reference is a Bio.PDB.Structure object with a X-Ray structure
+                that will serve as a reference model, this should only be used
+                with the MD mode
+            reference_model is an int with the reference model (default=0)
         """
 
-        ref_model = self.structure[reference]
+        ref_model = self.structure[reference_model]
+        if self.reference is not None:
+            ref_model = self.reference[0]
+
         for alt_model in self.structure:
             ref_atoms = []
             alt_atoms = []
@@ -132,14 +142,22 @@ class EDAnalysis:
                             alt_atoms.extend(list(alt_res.get_atoms()))
                         else:
                             for atoms in self.__atom:
-                                ref_atoms.append(ref_res[atoms])
-                                alt_atoms.append(alt_res[atoms])
+                                try:
+                                    ref_atoms.append(ref_res[atoms])
+                                    alt_atoms.append(alt_res[atoms])
+                                except KeyError:
+                                    raise KeyError(('Your input data is '
+                                                    'misssing information for '
+                                                    '{:s} atoms. Input more '
+                                                    'complete data or select a'
+                                                    ' smaller set of '
+                                                    'atoms').format(atoms))
 
             # Align these paired atom lists:
             super_imposer = pdb.Superimposer()
             super_imposer.set_atoms(ref_atoms, alt_atoms)
 
-            if ref_model.id == alt_model.id:
+            if ref_model.get_full_id() == alt_model.get_full_id():
                 # Check for self/self get zero RMS, zero translation
                 # and identity matrix for the rotation.
                 assert np.abs(super_imposer.rms) < 0.0000001
@@ -161,9 +179,16 @@ class EDAnalysis:
             for residue in model.get_residues():
                 if residue.has_id('CA'):
                     for atoms in self.__atom:
-                        array_stored[i][j:j+3] = residue[atoms].get_coord()
-                        means[0][j:j+3] += residue[atoms].get_coord()
-                        j += 3
+                        try:
+                            array_stored[i][j:j+3] = residue[atoms].get_coord()
+                            means[0][j:j+3] += residue[atoms].get_coord()
+                            j += 3
+                        except KeyError:
+                            raise KeyError(('Your input data is misssing '
+                                            'information for {:s} atoms'
+                                            '. Input more complete data '
+                                            'or select a smaller set of '
+                                            'atoms').format(atoms))
             i += 1
         means *= (1/self.n)
         self.coords_array = array_stored
@@ -264,8 +289,15 @@ class EDAnalysis:
             for residue in structure_moved[0].get_residues():
                 if residue.has_id('CA'):
                     for atoms in self.__atom:
-                        residue[atoms].set_coord(eig_move[0][j:j+3])
-                        j += 3
+                        try:
+                            residue[atoms].set_coord(eig_move[0][j:j+3])
+                            j += 3
+                        except KeyError:
+                            raise KeyError(('Your input data is misssing '
+                                            'information for {:s} atoms'
+                                            '. Input more complete data '
+                                            'or select a smaller set of '
+                                            'atoms').format(atoms))
             filename = ''.join([pathname, self.__PDBid, '_evc', str(evc), '_',
                                 str(int(t/step)), '.pdb'])
             io = pdb.PDBIO()
@@ -273,9 +305,6 @@ class EDAnalysis:
             io.save(filename, OneChainSelect())
             image_list.append(filename)
         return image_list
-
-
-
 
     def RMSD_res_plot(self, evc, pathplots, fig=None, origin=None):
         """Create a plot with the distance of the residues along
