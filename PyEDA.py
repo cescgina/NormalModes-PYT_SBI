@@ -98,7 +98,15 @@ elif options.atom == 'Back':
 if options.verb:
     print("Initializing analysis information")
 
-ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
+if options.mode == 'MD':
+    pdbref = pdb.PDBList()
+    ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
+    parser = pdb.PDBParser(QUIET=True)
+    reference = parser.get_structure(pdb_id+'ref', ref_file)
+    ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile,
+                        reference=reference)
+else:
+    ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
 
 if options.verb:
     print("Superimposing structures to a reference")
