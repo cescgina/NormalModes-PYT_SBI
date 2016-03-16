@@ -31,7 +31,8 @@ parse_args.add_argument('-i', '--input', dest="infile", action="store",
                         help="Input pdb file with either NMR or MD data")
 parse_args.add_argument('-m', '--mode', dest='mode', action="store",
                         choices=['NMR', 'MD'], help="Select wether you want to \
-                        perform the ED analysis on NMR or MD data")
+                        perform the ED analysis on NMR or MD data",
+                        default=None)
 parse_args.add_argument('-a', '--atoms', dest='atom', default='CA',
                         action="store", choices=['CA', 'Back', 'all'],
                         help="Select wich atoms you want to perform the \
@@ -65,6 +66,11 @@ if not options.graphical:
     interface.mainloop()
     sys.exit("The application has been closed.\n")
 
+if options.mode is None:
+    raise ValueError('Please specify a mode with the -m option')
+if options.code is None:
+    raise ValueError('Please specify a PDB code for your protein with the '
+                     "-c option")
 if options.mode == 'MD' and options.infile is None:
     raise ValueError(('To use the MD mode you need to input a trajectory in '
                       'a PDB file'))
@@ -103,6 +109,7 @@ if options.mode == 'MD':
     ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
     parser = pdb.PDBParser(QUIET=True)
     reference = parser.get_structure(pdb_id+'ref', ref_file)
+    head = mdl.store_header_text(pathname+pdbfile)
     ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile,
                         reference=reference)
 else:
@@ -110,7 +117,7 @@ else:
 
 if options.verb:
     print("Superimposing structures to a reference")
-    ED.superimpose_models()
+ED.superimpose_models()
 if options.mode == 'NMR':
     head = mdl.store_header_text(pathname+pdbfile)
     io = pdb.PDBIO()
@@ -135,9 +142,10 @@ if ED.n < n_plot:
     n_plot = ED.n
 plot = ED.plot_eig(n_plot, pathplots)
 
-# if options.verb:
-#     print("Generating eigenvector trajectories")
-# image_list = ED.move_structure(10, 1, pathname)
+if options.verb:
+    print("Generating eigenvector trajectories")
+moved = ED.move_structure(1, 1, pathname)
+mdl.merge_the_header(moved, head, moved)
 
 if options.verb:
     print("Generating RMSD plot for eigenvectors")

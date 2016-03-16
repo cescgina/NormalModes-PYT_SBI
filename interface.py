@@ -446,7 +446,20 @@ retrieved.\n".format(pdb_id))
             atom_list = ['N', 'CA', 'C', 'O']
         else:
             atom_list = ['N', 'CA', 'C', 'O']
-        ED = eda.EDAnalysis(pdb_id, mode, atom_list, pathname+pdbfile)
+
+        if mode == 'MD':
+            pdbref = pdb.PDBList()
+            ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
+            parser = pdb.PDBParser(QUIET=True)
+            reference = parser.get_structure(pdb_id+'ref', ref_file)
+            try:
+                ED = eda.EDAnalysis(pdb_id, mode, atom_list, pathname+pdbfile,
+                                    reference=reference)
+            except (eda.WrongModeException, KeyError, ValueError):
+                pass
+        else:
+            ED = eda.EDAnalysis(pdb_id, mode, atom_list, pathname+pdbfile)
+
         ED.superimpose_models()
         if mode == 'NMR':
             sys.stderr.write("Writting the superimposed file.\n")

@@ -46,6 +46,9 @@ class EDAnalysis:
         mode(private) -> String with the mode of the anlysis (for now NMR or MD)
         atom(private) -> List with the atoms to study
         structure -> Bio.PDB.Structure object on which the analysis is performed
+        reference -> Bio.PDB.Structure object with a X-Ray structure
+                that will serve as a reference model, this should only be used
+                with the MD mode
         n -> Number of models or trajectories (in NMR or MD modes,respectively)
         N -> Number of coordinates of the analysis
         coords_array -> nxN Numpy array with the N coordinates for the n models
@@ -108,16 +111,14 @@ class EDAnalysis:
         """Return the list of atoms of interest to the EDAnalysis."""
         return self.__atom
 
-    def superimpose_models(self, reference=None, reference_model=0):
+    def superimpose_models(self, reference_model=0):
         """Superimpose two or more structures.
 
         Superimpose two or more structures by using the Bio.PDB.Superimposer
         class.
 
         Args:
-            reference is a Bio.PDB.Structure object with a X-Ray structure
-                that will serve as a reference model, this should only be used
-                with the MD mode
+
             reference_model is an int with the reference model (default=0)
         """
 
@@ -133,8 +134,12 @@ class EDAnalysis:
             for (ref_chain, alt_chain) in zip(ref_model, alt_model):
                 for ref_res, alt_res in \
                         zip(ref_chain, alt_chain):
-                    assert ref_res.resname == alt_res.resname
-                    assert ref_res.id == alt_res.id
+                    # assert ref_res.resname == alt_res.resname, \
+                        # "{:s} is not equal to {:s}".format(ref_res.resname,
+                                                            # alt_res.resname)
+                    # assert ref_res.id == alt_res.id, \
+                        # "{:s} is not equal to {:s}".format(ref_res.id,
+                                                            # alt_res.id)
                     # CA = alpha carbon
                     if ref_res.has_id('CA'):
                         if self.__atom == []:
@@ -273,7 +278,8 @@ class EDAnalysis:
             t_min -> Int with initial time of the trajectory (default=0)
             step -> Float with the time-step of the trajectory (default=0.1)
 
-        Returns a list with all the files generated
+        Return the name of the file containing the new coordinates generated
+        as diferent models
         """
 
         if evc < 1 or evc > self.N:
@@ -281,12 +287,19 @@ class EDAnalysis:
         structure_moved = copy.deepcopy(self.structure)
         pcord = np.dot(self.eigvc[:, -evc], (self.coords_array[0] -
                                              self.means[0, :]))
-        image_list = []
         nsteps = int((t_max - t_min) / step)
+        for i in range(self.n):
+            structure_moved.detach_child(i)
+        idnum = 0
         for t in np.linspace(t_min, t_max, num=nsteps):
+            new_model = copy.deepcopy(self.structure[0])
+            new_model.full_id = (self.structure.id, idnum)
+            new_model.id = idnum
+            new_model.serial_num = idnum+1
+            idnum += 1
             eig_move = t * pcord * self.eigvc[:, -evc] + self.means
             j = 0
-            for residue in structure_moved[0].get_residues():
+            for residue in new_model.get_residues():
                 if residue.has_id('CA'):
                     for atoms in self.__atom:
                         try:
@@ -298,13 +311,15 @@ class EDAnalysis:
                                             '. Input more complete data '
                                             'or select a smaller set of '
                                             'atoms').format(atoms))
-            filename = ''.join([pathname, self.__PDBid, '_evc', str(evc), '_',
-                                str(int(t/step)), '.pdb'])
-            io = pdb.PDBIO()
-            io.set_structure(structure_moved)
-            io.save(filename, OneChainSelect())
-            image_list.append(filename)
-        return image_list
+            structure_moved.add(new_model)
+        filename = ''.join([pathname, self.__PDBid, '_traj_evc', str(evc),
+                            '.pdb'])
+        self.structure_moved = structure_moved
+        io = pdb.PDBIO()
+        io.set_structure(structure_moved)
+        # io.save(filename, ChainSelect(nsteps))
+        io.save(filename)
+        return filename
 
     def RMSD_res_plot(self, evc, pathplots, fig=None, origin=None):
         """Create a plot with the distance of the residues along
@@ -325,6 +340,10 @@ class EDAnalysis:
         """
         if fig is None:
             fig = plt.figure()
+
+        if evc < 1 or evc > self.N:
+            raise ValueError('Eigenvector index has to be between 1 and N')
+
         for evcn in range(1, evc+1):
             pcord = 0
             pmin = 10000000
