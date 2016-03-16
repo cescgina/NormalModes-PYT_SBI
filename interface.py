@@ -157,10 +157,19 @@ class initial_root(tkinter.Frame):
     where the options can be selected.
 
     Methods:
-        No methods implemented
+        select_a -> It shows a message with the atom chosen
+        select_m -> It shows a message with the mode chosen
+        check_uniprot_accession_code -> Checks if the code have len==4
+        get_pdb -> pass on the pdb code and move the user to the waiting_window
+        select_file -> pass on the pdb filename and move the user
+        to the waiting_window
 
     Attributes:
         self.controller -> It is a reference to the main Tk window.
+        self.entry_var -> to let the user place a pdb code
+        self.labels -> to display the method chosen in the radio buttons
+        self.m -> to pass on the mode chosen
+        self.var -> to pass on the atoms chosen
     """
     def __init__(self, parent, controller):
         """
@@ -262,16 +271,19 @@ class initial_root(tkinter.Frame):
             self.grid_columnconfigure(i, weight=1)
             i+=1
     def select_m(self):
+        """displays a message with the option chosen"""
         selection = "You selected the option %s" %self.m.get()
         self.label_m.config(text=selection)
         self.controller.app_data["mode"] = self.m.get()
 
     def select_a(self):
+        """displays a message with the option chosen"""
         selection = "You selected the option %s" %self.var.get()
         self.label_a.config(text=selection)
         self.controller.app_data["atom"] = self.var.get()
 
     def check_uniprot_accession_code(self):
+        """ uses a function to check weather the code in 4 chars long"""
         if mdl.pdb_code_check(self.entry_var.get()):
             self.entry["foreground"] = "green"
         else:
@@ -279,6 +291,7 @@ class initial_root(tkinter.Frame):
                             %self.entry_var.get())
             self.entry["foreground"] = "red"
     def get_pdb(self):
+        """gets the pdb code and stores the info, then move on to waiting"""
         interface_code = str(self.entry_var.get())
         if mdl.pdb_code_check(interface_code):
             self.controller.app_data["pdbid"] = interface_code
@@ -297,6 +310,7 @@ class initial_root(tkinter.Frame):
             self.entry["foreground"] = "red"
 
     def select_file(self):
+        """gets the pdb file name and stores the info, then move on to waiting"""
         filename = filedialog.askopenfilename()
         if not (filename.endswith('pdb') or filename.endswith('ent')):
             raise ValueError('Your input file is not a valid PDB file, \
@@ -321,8 +335,17 @@ please use a pdb or ent file')
 ################################################################################
 
 class About_EDA(tkinter.Frame):
+    """
+    It is a information page that contains an explanation of the software
+    features.
 
+    Methods:
+
+    Attributes:
+
+    """
     def __init__(self, parent, controller):
+        """ Constructor """
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         label1 = tkinter.Label(self, text="Help and Documentation", font=TITLE_FONT)
@@ -366,8 +389,19 @@ class About_EDA(tkinter.Frame):
 ################################################################################
 
 class waiting_window(tkinter.Frame):
-    """docstring for waiting_window"""
+    """
+    It is the window where the proper analysis is taking place. The user hits
+    the button and the analysis follows.
+
+    Methods:
+        analysis -> It is the method where all the computations are located. It
+        starts when the user hit the button analysis.
+
+    Attributes:
+
+    """
     def __init__(self, parent, controller):
+        """Constructor"""
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         ### title
@@ -386,6 +420,12 @@ processed.", font=text_fornt)
         close_button.pack()
 
     def analysis(self):
+        """
+        Basically it contains all the computations needed to perform the EDA.
+        It contain the same steps used in the main CLI.
+        It also generate the plots at the end. When the plots are generated
+        move the software to the plot_window.
+        """
         pdb_id = self.controller.app_data["pdbid"]
         pathname = self.controller.app_data["pathname"]
         pdbfile = self.controller.app_data["pdbfilename"]
@@ -440,6 +480,20 @@ retrieved.\n".format(pdb_id))
 ################################################################################
 
 class plot_window(tkinter.Frame):
+    """
+    This window integrated matplotlib package in a Tkinter interface. It uses
+    the previously generated plots in the analysis method. The user can hit one
+    or the other button to see the eigen_plot or the RMSD_plot.
+
+    Methods:
+        eigen_plot -> It displays the plot eigenvalue vs eigenindex. It uses the
+        matplotlib integration in tkinter.
+        RMSD_plot -> It shows the RMSD vs Residue plot. It uses the matplotlib
+        integration in tkinter.
+
+    Attributes:
+
+    """
     def __init__(self, parent, controller):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
@@ -456,6 +510,7 @@ class plot_window(tkinter.Frame):
 
 
     def eigen_plot(self):
+        """It generates a canvas to inttegrate the already generated plot"""
         if self.canvas != None:
             self.canvas.get_tk_widget().destroy()
             self.toolbar.destroy()
@@ -468,6 +523,7 @@ class plot_window(tkinter.Frame):
         self.toolbar.update()
         self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
     def RMSD_plot(self):
+        """It generates a canvas to inttegrate the already generated plot"""
         if self.canvas != None:
             self.canvas.get_tk_widget().destroy()
             self.toolbar.destroy()
