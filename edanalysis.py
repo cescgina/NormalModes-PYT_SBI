@@ -313,7 +313,7 @@ class EDAnalysis:
                                             'atoms').format(atoms))
             structure_moved.add(new_model)
         filename = ''.join([pathname, self.__PDBid, '_traj_evc', str(evc),
-                            '.pdb'])
+                            'i.pdb'])
         self.structure_moved = structure_moved
         io = pdb.PDBIO()
         io.set_structure(structure_moved)

@@ -145,7 +145,9 @@ plot = ED.plot_eig(n_plot, pathplots)
 if options.verb:
     print("Generating eigenvector trajectories")
 moved = ED.move_structure(1, 1, pathname)
-mdl.merge_the_header(moved, head, moved)
+new_moved = moved[:-5]+'.pdb'
+mdl.merge_the_header(moved, head, new_moved)
+os.remove(moved)
 
 if options.verb:
     print("Generating RMSD plot for eigenvectors")
