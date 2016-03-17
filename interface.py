@@ -255,6 +255,24 @@ class initial_root(tkinter.Frame):
 
         self.label_a = tkinter.Label(self)
         self.label_a.grid(row=8, column=2, columnspan=3)
+        ### trajectory
+
+        label5 = tkinter.Label(self, text="Do you want to build a trajectory?",
+                              font=("Helvetica", 15))
+        label5.grid(row=3, column=2, columnspan=3)
+        self.t = tkinter.StringVar()
+        t1 = tkinter.Radiobutton( self, text="Yes", variable = self.t, \
+            value = 'Yes', command = self.select_t)
+        t2 = tkinter.Radiobutton( self, text="No", variable = self.t, \
+            value = 'No', command = self.select_t )
+
+        t1.grid( row=9, column=2)
+        t2.grid( row=9, column=3, columnspan=2, sticky="w")
+
+        self.label_t = tkinter.Label(self)
+        self.label_t.grid(row=10, column=2, columnspan=3)
+
+
 
         ### start page button
         button = tkinter.Button(self, text="Start page",
@@ -273,7 +291,11 @@ class initial_root(tkinter.Frame):
         selection = "You selected the option %s" %self.m.get()
         self.label_m.config(text=selection)
         self.controller.app_data["mode"] = self.m.get()
-
+    def select_t(self):
+        """displays a message with the option chosen"""
+        selection = "You selected the option %s" %self.t.get()
+        self.label_t.config(text=selection)
+        self.controller.app_data["mode"] = self.t.get()
     def select_a(self):
         """displays a message with the option chosen"""
         selection = "You selected the option %s" %self.var.get()
