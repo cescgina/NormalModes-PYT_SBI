@@ -8,5 +8,5 @@ setup(name='PyEDA',
       author='JF Gilabert & D Mas',
       author_email='joanfrancesc.gilabert01@estudiant.upf.edu & david.mas01@estudiant.upf.edu',
       url='http://bit.ly/PyEDA',
-      packages=['distutils', 'distutils.command'],
+      packages=['PyEDA_modules', 'PyEDA_modules.interface', 'PyEDA_modules.analysis', 'PyEDA_modules.helper_functions'],
      )
