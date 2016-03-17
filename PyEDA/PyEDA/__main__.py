@@ -47,6 +47,18 @@ parse_args.add_argument('-d', '--directory', dest='path', action='store',
 parse_args.add_argument('-v', '-verbose', dest='verb', action="store_true",
                         default=False, help="Verbose description of program \
                         actions")
+parse_args.add_argument('--eigvl-num', dest='eigvl', action='store', default=4,
+                        help="Number of eigenvalues to plot (default is 4)")
+parse_args.add_argument('--time-max', dest='time', action='store', default=1,
+                        help="Maximum time during which the trajectories of a \
+                        certain eigenvector")
+parse_args.add_argument('--time-step', dest='step', action='store',
+                        default=0.1, help="Time step for the generated \
+                        trajectories")
+parse_args.add_argument('--eigvc-num', dest='eigvc', action='store', default=1,
+                        help="Number of eigenvector for which new trajectories \
+                        will be generated, default is 1 since it is a \
+                        computationally expensive step")
 options = parse_args.parse_args()
 
 path = ''
@@ -115,9 +127,17 @@ if options.mode == 'MD':
 else:
     ED = eda.EDAnalysis(pdb_id, options.mode, atom_list, pathname+pdbfile)
 
+if options.eigvl < 1 or options.eigvl > ED.N:
+    raise ValueError('Number of eigenvalues to plot must be between 1 and N')
+if options.eigvc < 1 or options.eigvc > ED.N:
+    raise ValueError('Number of eigenvectors must be between 1 and N')
+if options.time < 0:
+    raise ValueError('Final time for the generated trajectories must be > 0')
+
 if options.verb:
     print("Superimposing structures to a reference")
 ED.superimpose_models()
+
 if options.mode == 'NMR':
     head = mdl.store_header_text(pathname+pdbfile)
     io = pdb.PDBIO()
@@ -137,21 +157,22 @@ ED.cal_cov()
 
 if options.verb:
     print("Plotting eigenvalues")
-n_plot = 30
+n_plot = options.eigvl
 if ED.n < n_plot:
     n_plot = ED.n
 plot = ED.plot_eig(n_plot, pathplots)
 
 if options.verb:
     print("Generating eigenvector trajectories")
-moved = ED.move_structure(1, 1, pathname)
+moved = ED.move_structure(options.time, options.eigvc, pathname,
+                          step=options.step)
 new_moved = moved[:-5]+'.pdb'
 mdl.merge_the_header(moved, head, new_moved)
 os.remove(moved)
 
 if options.verb:
     print("Generating RMSD plot for eigenvectors")
-plot = ED.RMSD_res_plot(4, pathplots)
+plot = ED.RMSD_res_plot(options.eigvc, pathplots)
 # for file_img in image_list:
 #     sname = file_img.rstrip(".pdb")
 #     pymol.cmd.load(file_img, sname)
