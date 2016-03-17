@@ -6,6 +6,7 @@ setup(name='PyEDA',
       version='1.0',
       description='Essential Dynamics Analysis for protein trajectories',
       author='JF Gilabert & D Mas',
-      author_email='joanfrancesc.gilabert01@estudiant.upf.edu & david.mas01@estudiant.upf.edu',
+      author_email='joanfrancesc.gilabert01@estudiant.upf.edu & ' +
+      'david.mas01@estudiant.upf.edu',
       url='http://bit.ly/PyEDA',
-      packages=['PyEDA'])
+      packages=['PyEDA', 'main'])
