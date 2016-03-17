@@ -21,6 +21,7 @@ Classes:
 """
 
 import tkinter
+from tkinter import ttk
 import os.path
 import os
 import sys
@@ -212,7 +213,6 @@ class initial_root(tkinter.Frame):
             ### get pdb button
         get = tkinter.Button(self, text="Get PDB", command=self.get_pdb)
         get.grid(row=6, column=0, columnspan=2)
-
             ### add a file button
         add = tkinter.Button(self, text="Add a pdb file", \
             command=self.select_file)
@@ -255,8 +255,6 @@ class initial_root(tkinter.Frame):
 
         self.label_a = tkinter.Label(self)
         self.label_a.grid(row=8, column=2, columnspan=3)
-
-
 
         ### start page button
         button = tkinter.Button(self, text="Start page",
@@ -408,13 +406,17 @@ class waiting_window(tkinter.Frame):
         title = tkinter.Label(self, text="Waiting Room.",
                       font=TITLE_FONT)
         title.pack(side=tkinter.TOP)
-        subtitle = tkinter.Label(self, text="Please, hit the button Analysis to \
-start the computations. \n Have a coffe meanwhile your data is being \
-processed.", font=text_fornt)
+        subtitle = tkinter.Label(self, text="""
+        Please, hit the button Analysis to start the computations.
+        Have a coffe meanwhile your data is being processed.
+        """, font=text_fornt)
         subtitle.pack(side=tkinter.TOP)
         ### analysis
-        analysis_button = tkinter.Button(self, text="Analysis", command=self.analysis)
+        analysis_button = tkinter.Button(self, text="Analysis",\
+                command=self.analysis)
         analysis_button.pack()
+
+
         ### add a closing button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
         close_button.pack()
@@ -446,7 +448,6 @@ retrieved.\n".format(pdb_id))
             atom_list = ['N', 'CA', 'C', 'O']
         else:
             atom_list = ['N', 'CA', 'C', 'O']
-
         if mode == 'MD':
             pdbref = pdb.PDBList()
             ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
@@ -476,13 +477,20 @@ retrieved.\n".format(pdb_id))
         sys.stderr.write("Calculating eigenvalues and eigenvectors\n")
         ED.cal_cov()
         sys.stderr.write("Plotting eigenvalues\n")
-        pathplots = self.controller.app_data["pathplots"]
+        #pathplots = self.controller.app_data["pathplots"]
         n_plot = 30
         if ED.n < n_plot:
             n_plot = ED.n
         pathplots = pathname + 'plots/'
         plot = ED.plot_eig_wosv(n_plot)
         self.controller.app_data["plot"] = plot
+
+        ### generating the new trajectory
+        sys.stderr.write("Generating eigenvector trajectories\n")
+        moved = ED.move_structure(2, 1, pathname, step=0.2)
+        new_moved = moved[:-5]+'.pdb'
+        mdl.merge_the_header(moved, head, new_moved)
+        os.remove(moved)
 
 
         RMSD_plot = ED.RMSD_res_plot(4, pathplots, origin='interface')
