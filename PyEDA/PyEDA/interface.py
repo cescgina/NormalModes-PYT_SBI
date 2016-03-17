@@ -26,12 +26,12 @@ import os.path
 import os
 import sys
 from tkinter import filedialog
-import module_david as mdl
+from . import helper_module as mdl
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import Bio.PDB as pdb
-import edanalysis as eda
+from . import edanalysis as eda
 
 
 # implement the default mpl key bindings
@@ -121,7 +121,8 @@ class StartPage(tkinter.Frame):
         title = tkinter.Label(self, text="Welcome to the ED Analyser.",
                       font=("Helvetica", 25))
         title.grid(row=1, column=0, columnspan=3)
-        photo = tkinter.PhotoImage(file="image.gif")
+        path_to_img = os.path.dirname(os.path.realpath(__file__))
+        photo = tkinter.PhotoImage(file=path_to_img+"/image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
         w.grid(row=0, column=0, columnspan=3)
@@ -186,7 +187,8 @@ class initial_root(tkinter.Frame):
                       font=("Helvetica", 25), justify= "center")
         title.grid(row=1, column=0, columnspan=5)
         ### photo
-        photo = tkinter.PhotoImage(file="image.gif")
+        path_to_img = os.path.dirname(os.path.realpath(__file__))
+        photo = tkinter.PhotoImage(file=path_to_img+"/image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
         w.grid(row=0, column=0, columnspan=5)
@@ -273,7 +275,6 @@ class initial_root(tkinter.Frame):
         selection = "You selected the option %s" %self.m.get()
         self.label_m.config(text=selection)
         self.controller.app_data["mode"] = self.m.get()
-
     def select_a(self):
         """displays a message with the option chosen"""
         selection = "You selected the option %s" %self.var.get()
@@ -433,14 +434,17 @@ class waiting_window(tkinter.Frame):
         pdbfile = self.controller.app_data["pdbfilename"]
         atom = self.controller.app_data["atom"]
         mode = self.controller.app_data["mode"]
+
         sys.stderr.write("the selcted mode is: {} ".format(mode))
         pdbalignedfile = str(pdb_id) + 'align.pdb'
         pdb_superimp = str(pathname) + str(pdb_id) + 'superimp.pdb'
+
         if not os.path.exists(str(pathname)+str(pdbfile)):
             pdbobj = pdb.PDBList()
             pdbobj.retrieve_pdb_file(pdb_id, pdir=str(pathname))
             sys.stderr.write("The structure {} have been \
 retrieved.\n".format(pdb_id))
+
         atom_list = []
         if atom == 'CA':
             atom_list = ['CA']
@@ -448,6 +452,7 @@ retrieved.\n".format(pdb_id))
             atom_list = ['N', 'CA', 'C', 'O']
         else:
             atom_list = ['N', 'CA', 'C', 'O']
+
         if mode == 'MD':
             pdbref = pdb.PDBList()
             ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
@@ -461,15 +466,18 @@ retrieved.\n".format(pdb_id))
         else:
             ED = eda.EDAnalysis(pdb_id, mode, atom_list, pathname+pdbfile)
 
+
         ED.superimpose_models()
         if mode == 'NMR':
             sys.stderr.write("Writting the superimposed file.\n")
             head = mdl.store_header_text(pathname+pdbfile)
+            self.controller.app_data["head"] = head
             io = pdb.PDBIO()
             io.set_structure(ED.structure)
             io.save(pdb_superimp)
             mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
             os.remove(pdb_superimp)
+
 
         sys.stderr.write("Calculating means and coordinates\n")
         ED.createcordsarray()
@@ -477,6 +485,7 @@ retrieved.\n".format(pdb_id))
         sys.stderr.write("Calculating eigenvalues and eigenvectors\n")
         ED.cal_cov()
         sys.stderr.write("Plotting eigenvalues\n")
+        self.controller.app_data["ED"] = ED
         #pathplots = self.controller.app_data["pathplots"]
         n_plot = 30
         if ED.n < n_plot:
@@ -484,13 +493,6 @@ retrieved.\n".format(pdb_id))
         pathplots = pathname + 'plots/'
         plot = ED.plot_eig_wosv(n_plot)
         self.controller.app_data["plot"] = plot
-
-        ### generating the new trajectory
-        sys.stderr.write("Generating eigenvector trajectories\n")
-        moved = ED.move_structure(2, 1, pathname, step=0.2)
-        new_moved = moved[:-5]+'.pdb'
-        mdl.merge_the_header(moved, head, new_moved)
-        os.remove(moved)
 
 
         RMSD_plot = ED.RMSD_res_plot(4, pathplots, origin='interface')
@@ -519,11 +521,48 @@ class plot_window(tkinter.Frame):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         self.canvas = None
-        eigen_button = tkinter.Button(self, text="Eigen Vectors Plot", command=self.eigen_plot)
-        eigen_button.pack()
+        grid_frame = tkinter.Frame(self)
+        grid_frame.pack(side=tkinter.LEFT)
+        label = tkinter.Label(grid_frame, text="Choose a plot to visualize:",
+                              font=("Helvetica", 15))
+        label.grid(row=0, column=0)
+        eigen_button = tkinter.Button(grid_frame, text="Eigen Vectors Plot", command=self.eigen_plot)
+        eigen_button.grid(row=0, column=1)
 
-        RMSD_button = tkinter.Button(self, text="RMSD Plot", command=self.RMSD_plot)
-        RMSD_button.pack()
+        RMSD_button = tkinter.Button(grid_frame, text="RMSD Plot", command=self.RMSD_plot)
+        RMSD_button.grid(row=0, column=2)
+        ### generate a trajectory file
+        ### trajectory
+        ### eigv entry
+        self.entry_evc = tkinter.IntVar()
+            ### entry
+        label2 = tkinter.Label(grid_frame, text="Choose a Eigen Vector for the trajectory:",
+                              font=("Helvetica", 15))
+        label2.grid(row=1, column=0)
+        self.entry = tkinter.Entry(grid_frame, bd=2, width=5, \
+            textvariable=self.entry_evc)
+        self.entry.grid(row=1, column=1)
+
+        label2 = tkinter.Label(grid_frame, text="ev index (1-10)",
+                              font=("Helvetica", 15))
+        label2.grid(row=1, column=2)
+
+        self.entry_time = tkinter.IntVar()
+            ### entry
+        label_time = tkinter.Label(grid_frame, text="Enter maximum span for the trajectory:",
+                              font=("Helvetica", 15))
+        label_time.grid(row=2, column=0)
+        self.entry_time = tkinter.Entry(grid_frame, bd=2, width=5, \
+            textvariable=self.entry_time)
+        self.entry_time.grid(row=2, column=1)
+
+        label3 = tkinter.Label(grid_frame, text="span (1-3)",
+                              font=text_fornt)
+        label3.grid(row=2, column=2)
+
+        traj_but=tkinter.Button(grid_frame, text="Get the trajectory", \
+            command=self.trajectory)
+        traj_but.grid(row=3, column=0, columnspan=3)
 
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
@@ -556,6 +595,19 @@ class plot_window(tkinter.Frame):
         self.toolbar = NavigationToolbar2TkAgg(self.canvas, self)
         self.toolbar.update()
         self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+    def trajectory(self):
+        ED = self.controller.app_data["ED"]
+        pathname = self.controller.app_data["pathname"]
+        head = self.controller.app_data["head"]
+        evc = int(self.entry_evc.get())
+        time = int(self.entry_time.get())
+        ### generating the new trajectory
+        sys.stderr.write("Generating eigenvector trajectories\n")
+        moved = ED.move_structure(time, evc, pathname)
+        new_moved = moved[:-5]+'.pdb'
+        mdl.merge_the_header(moved, head, new_moved)
+        os.remove(moved)
+        sys.stderr.write("Done!\n")
 
 ################################################################################
 
