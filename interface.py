@@ -255,24 +255,6 @@ class initial_root(tkinter.Frame):
 
         self.label_a = tkinter.Label(self)
         self.label_a.grid(row=8, column=2, columnspan=3)
-        ### trajectory
-
-        label5 = tkinter.Label(self, text="Do you want to build a trajectory?",
-                              font=("Helvetica", 15))
-        label5.grid(row=3, column=2, columnspan=3)
-        self.t = tkinter.StringVar()
-        t1 = tkinter.Radiobutton( self, text="Yes", variable = self.t, \
-            value = 'Yes', command = self.select_t)
-        t2 = tkinter.Radiobutton( self, text="No", variable = self.t, \
-            value = 'No', command = self.select_t )
-
-        t1.grid( row=9, column=2)
-        t2.grid( row=9, column=3, columnspan=2, sticky="w")
-
-        self.label_t = tkinter.Label(self)
-        self.label_t.grid(row=10, column=2, columnspan=3)
-
-
 
         ### start page button
         button = tkinter.Button(self, text="Start page",
@@ -291,11 +273,6 @@ class initial_root(tkinter.Frame):
         selection = "You selected the option %s" %self.m.get()
         self.label_m.config(text=selection)
         self.controller.app_data["mode"] = self.m.get()
-    def select_t(self):
-        """displays a message with the option chosen"""
-        selection = "You selected the option %s" %self.t.get()
-        self.label_t.config(text=selection)
-        self.controller.app_data["mode"] = self.t.get()
     def select_a(self):
         """displays a message with the option chosen"""
         selection = "You selected the option %s" %self.var.get()
@@ -483,15 +460,18 @@ retrieved.\n".format(pdb_id))
         else:
             ED = eda.EDAnalysis(pdb_id, mode, atom_list, pathname+pdbfile)
 
+
         ED.superimpose_models()
         if mode == 'NMR':
             sys.stderr.write("Writting the superimposed file.\n")
             head = mdl.store_header_text(pathname+pdbfile)
+            self.controller.app_data["head"] = head
             io = pdb.PDBIO()
             io.set_structure(ED.structure)
             io.save(pdb_superimp)
             mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
             os.remove(pdb_superimp)
+
 
         sys.stderr.write("Calculating means and coordinates\n")
         ED.createcordsarray()
@@ -499,6 +479,7 @@ retrieved.\n".format(pdb_id))
         sys.stderr.write("Calculating eigenvalues and eigenvectors\n")
         ED.cal_cov()
         sys.stderr.write("Plotting eigenvalues\n")
+        self.controller.app_data["ED"] = ED
         #pathplots = self.controller.app_data["pathplots"]
         n_plot = 30
         if ED.n < n_plot:
@@ -506,13 +487,6 @@ retrieved.\n".format(pdb_id))
         pathplots = pathname + 'plots/'
         plot = ED.plot_eig_wosv(n_plot)
         self.controller.app_data["plot"] = plot
-
-        ### generating the new trajectory
-        sys.stderr.write("Generating eigenvector trajectories\n")
-        moved = ED.move_structure(2, 1, pathname, step=0.2)
-        new_moved = moved[:-5]+'.pdb'
-        mdl.merge_the_header(moved, head, new_moved)
-        os.remove(moved)
 
 
         RMSD_plot = ED.RMSD_res_plot(4, pathplots, origin='interface')
@@ -546,6 +520,32 @@ class plot_window(tkinter.Frame):
 
         RMSD_button = tkinter.Button(self, text="RMSD Plot", command=self.RMSD_plot)
         RMSD_button.pack()
+        ### generate a trajectory file
+        ### trajectory
+        ### eigv entry
+        self.entry_evc = tkinter.IntVar()
+            ### entry
+        label = tkinter.Label(self, text="Enter the EVC for the trajectory:",
+                              font=("Helvetica", 15))
+        label.pack
+        self.entry = tkinter.Entry(self, bd=2, width=5, \
+            textvariable=self.entry_evc)
+        self.entry.pack()
+
+        self.entry_time = tkinter.IntVar()
+            ### entry
+        label_time = tkinter.Label(self, text="Enter maximum span for the trajectory:",
+                              font=("Helvetica", 15))
+        label_time.pack
+        self.entry_time = tkinter.Entry(self, bd=2, width=5, \
+            textvariable=self.entry_time)
+        self.entry_time.pack()
+
+        traj_but=tkinter.Button(self, text="Get the trajectory", \
+            command=self.trajectory)
+        traj_but.pack()
+        label2 = tkinter.Label(self)
+        label2.pack()
 
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
@@ -578,6 +578,19 @@ class plot_window(tkinter.Frame):
         self.toolbar = NavigationToolbar2TkAgg(self.canvas, self)
         self.toolbar.update()
         self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+    def trajectory(self):
+        ED = self.controller.app_data["ED"]
+        pathname = self.controller.app_data["pathname"]
+        head = self.controller.app_data["head"]
+        evc = int(self.entry_evc.get())
+        time = int(self.entry_time.get())
+        ### generating the new trajectory
+        sys.stderr.write("Generating eigenvector trajectories\n")
+        moved = ED.move_structure(time, evc, pathname)
+        new_moved = moved[:-5]+'.pdb'
+        mdl.merge_the_header(moved, head, new_moved)
+        os.remove(moved)
+        sys.stderr.write("Done!\n")
 
 ################################################################################
 

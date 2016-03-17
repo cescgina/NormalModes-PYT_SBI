@@ -1,0 +1,192 @@
+\title{ PyEDA: \\ A Software to analyze Normal Modes in NMR and MD Structures using an Essential Dynamics approach.\thanks{ Introduction to Pythons $\&$ Structural Bioinformatics - M. Sc. in Bioinformatics for Health Sciences at Universitat Pompeu Fabra}}
+\author{Joan Francesc Gilabert  $\&$ David Mas  - Prof:Javi Garcia $\&$ Baldo Oliva. }
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{tikz}
+%\usepackage{tikz}
+\usetikzlibrary{decorations.markings,arrows}
+\usepackage{pgfkeys}
+\usepackage{natbib}
+\bibliographystyle{nature}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{basicstyle=\footnotesize,
+  showstringspaces=false,
+  commentstyle=\color{orange},
+  keywordstyle=\color{blue},
+  stringstyle=\color{purple}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In this project we have developed PyEDA a python based software capable to analyze Normal Modes from NMR and MD structures in pdb format. It uses a Essential Dynamics approach and it gives different outputs like a structure pdb file with the superimposed structures, the eigenvalues in decreasing order, the fluctuations of the structure by residue and a final structure with the main motions of defined normal modes applied. It can be used as a python Package,  with a tkinter interface and also as a CLI standalone program. The main dependencies of the software are BioPython\citep{Cock2009}, Tkinter, Matplotlib\citep{Hunter2007}, NumPy and SciPy\citep{VanderWalt2011} packages.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction to NMA and Essential Dynamics}
+Normal mode analysis or NMA are powerful  and common methods used by the protein field to study the collective motions of biomolecules. Its arise comes from the fact that protein function, protein structure and protein dynamics are closely related. The way a part of a protein is moving can help us determine weather a specific part of the structure is relevant in terms of functionality. Although it is not covered in this software, dynamics analysis can also help in the use of homology modeling to  order to determine evolutionary patterns in highly conserved sequences. 
+
+There are 3 important approaches to perform a NMA. 
+\begin{enumerate} [i]
+\item Standard Normal Mode Analysis
+\item Elastic Network Models
+\item Essential Dynamics
+\end{enumerate}
+The presented software uses a Essential Dynamics approach but this tutorial is going to give a brief explanation of the basics of the other approaches.\citep{Hayward2008}
+\subsection{Standard Normal Mode Analysis}
+The Normal Mode Analysis are mostly used to probe large-scale and shape-changing motions in biological molecules. It has connections with experimental techniques such as infrared and Raman spectroscopy but its main use is to theoretically predict motion in proteins. 
+
+The most important Normal Modes are the ones that have greater fluctuation and lower frequency because as any other biological sequence they have emerged from evolutionary design rather than by chance. For example, a movement of a protein produced by chance will be not just in one direction but in many and therefore its fluctuation in one directory will be reduced by the fluctuation in the other directory. The movement of the protein to bind or interact with another protein will be seen in NMA as a unique Normal Mode with a great fluctuation.
+
+In its purest form, NMA is a harmonic analysis and at the end it uses the same force fields that the ones used in the Molecular Dynamics Simulation. There are 3 steps in order to perform a NMA of a protein. 
+\begin{enumerate} [i]
+\item In the first step a standard NMA minimize the conformational potential energy as a function of the atomic coordinates
+\item Next, it will compute a Hessian Matrix using second derivatives of the potential energy for each coordinate
+\item Finally, it will compute the diagonalization of the Hessian matrix obtaining eigenvalues and eigenvectors also named as "normal modes".
+\end{enumerate}
+Each of these steps are very computationally demanding. Because of this complexity associated to these computations other more simple approaches have been used in order to minimize the computational cost of a NMA.
+
+\subsection{Elastic Network Models}
+The Elastic Network\citep{Tirion1996} approach is a big simplification of the problem and the results are not much different from the standard NMA considering the difference from an sNMA to reality. At the end this Elastic Network approach uses a protein model is dramatically simplified. In this model the atoms are connected by a network of elastic connections. The advantages versus the traditional approach are the elimination of the energy minimization step and the reduced number of atoms considered. The first advantage is held because the approach already consider the elastic connections to be at their minimum length. The reduced number of atoms is due to the use of $C_{\alpha}$ only for the analysis as they are the points connected in the protein. For most of the functional movements and dynamics of proteins it is enough to consider these atoms as they represent the structure shape.\citep{Hayward2008}
+
+\subsection{Essential Dynamics}
+The Essential Dynamics approach\citep{Amadei1993} is a completely different computation. It is based on a principal components analysis (PCA). This radical change have its importance in the complexity of biomolecules. Proteins and in general all of the biomolecular systems have complex dynamics simulations that can be hard to analyze and to uncover functional mechanisms or motions. This disadvantage of the previous approaches is solved using Essential Dynamics as it only remark the most important modes.  Interestingly, it has been found that most of protein dynamics can be described by a low number of degrees of freedom. Moreover this approach have the huge advantage that the dynamics can be inspected mode by mode and separately. Allowing  to use only the most characteristic modes. 
+
+In contrast to NMA, PCA of a molecular dynamics simulation trajectory does not rest on the assumption of a harmonic potential. In fact, PCA can be used to study the degree of anharmonicity in the molecular dynamics of a simulated system. It was shown in proteins that in physiological temperatures especially the major modes are dominated by anharmonic fluctuation and therefore can be predicted using this approach\citep{Amadei1993}. 
+
+Using Essential Dynamics, the modes are sorted according to variance rather than frequency. Nevertheless, the largest-amplitude modes of a PCA usually also represent the slowest dynamical transitions. Therefore the conclusions of an standard NMA analysis stands with this approach.\citep{Hayward2008}
+\subsubsection{Steps in a Essential Dynamics approach}
+The steps to perform this approach are the following:
+\begin{enumerate} [i]
+\item Superposition to a common reference structure. This step is crucial particularly in NMR structures.
+\item Construction of a variance–covariance matrix of positional fluctuations using atom coordinates
+\item Diagonalitzation of the matrix to obtain eigenvalues and eigenvectores representing the modes of motion
+\item Projection of the original configurations onto a defined set of principal components to get principal coordinates. 
+\end{enumerate}
+The matrix construction is the key step. It is build first constructing a vector with all the 3 coordinates for each atom and for each model and then computing the means of each position for different models (for NMR structures) or time frames (for Molecular Dynamics).  After these 2 small steps the $C$ matrix is constructed as a co-variance matrix using the following equation,
+\begin{equation}
+C=<(x_{i}(k) - <x_{i}>) \cdot (x_{j}(k) - <x_{j}>)>
+\end{equation}
+where $x_{i}(k)$ and $x_{j}(k)$ are the atomic coordinates of the atoms $i$ and $j$ in
+configuration $k$\citep{Amadei1993,Gargallo2003}. 
+
+In order to obtain the modes a diagonalization step for solving this must be held.
+\begin{equation}
+\Lambda = \mathbb{V}^{T} \mathbb{C} \mathbb{V}
+\end{equation}
+where $\Lambda$ is a diagonal matrix (contining the eigenvalues) and where $\mathbb{V}$ is the matrix formed by the eigenvectors, each one corresponding to the eigenvalues of $\Lambda$.
+
+The eigenvectors are the representation of each normal mode. The eigenvalue that is associated with a eigenvector (or mode) indicates the relative contribution of that mode (or eigenvector) to the motion of the whole protein structure.\citep{Gargallo2003}
+
+Therefore, the normal modes can be sorted using the eigenvalues as representation of their contribution to the protein. Usually in decreasing order. For a structure of N atoms, $\mathbb{C}$ would be a 3N × 3N matrix. As a result of the diagonalitzation, $3N − 6$ eigenvectors with nonzero eigenvalues will be obtained. There should be 6 eigenvalues equal to 0 because the corresponding eigenvectors describe the overall rotation and translation that is eliminated in the superposition step. In practice, with full-protein structures and considering $M$ as the number of models or frames, we will get most of the times $M-1$ eigenvalues different from $0$ because most of the times $3N > M$ this conditions will be true. To sum up, in most of the analyses we would be able to obtain $M-1$ nonzero eigenvalues which is not a big deal considering we are only interested in the major ones\citep{Hayward2008}. 
+
+The next step is the projection of the principal component into principal coordinates. To do so, the following 2 equations have been used:
+\begin{equation}
+p_{i}(k)=\mu_{i}\cdot (x(k) - <x>) 
+\end{equation}
+\begin{equation}
+x'_{i}(k)=p_{i}(k) \cdot \mu_{i} + <x>
+\end{equation}
+In equation 3 we project the eigenvectors to the original coordinates to get the principal coordinates or $p_{i}$ and then, in equation 4 we transform back these projections to Cartesian coordinates. This is an important step for visualization of the motions. In equation 3, the eigenvector is represented with the $\mu$ and the particular coordinate is represented with $x(k)$. In Equation 4, the representation stands.\citep{Hayward2008}
+\clearpage
+\section{Practical Tutorial}
+\subsection{Work-flow}
+The workflow is summarized in the following figure:
+
+\vspace{1cm}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.45]{DyagramFlow_NMA}
+\caption{Entire Workflow for EDA}
+\label{fig:workflow}
+\end{figure}
+As seen in the figure \ref{fig:workflow}, the user can introduce either a file or a pdb code. If the user introduce a pdb code the software retrieve the structure from pdb (if internet connection is available). The structure that must contain Models or Frames in order to analyze the Normal modes. Then the Superimposition takes place and generates the first pdb file with the superimposed strucutres of the different modes. After that the Essential Dynamics step is performed obtaining the eigenvectors and eigenvalues that represent the normal modes. The regular plots obtained after this step (eigenvalues vs eigenvector index) can be obtain through a matplotlib integration in a Tkinter window. After that, the projection is performed and the projections plots (RMSD vs Residue Number) is sent to the same Tkinter window mentioned before. The final step is to generate a final pdb file containing the projected structure.
+
+As you can see the main dependencies are included in the figure and represented by their logos when used. The Tkinter interface covers almost all steps from loading the data to the software to the plots in the visualization step. Moreover, BioPython\citep{Cock2009} and NumPy and SciPy\citep{VanderWalt2011} packages are used almost everywhere. This Software is based in a \textit{"do not reinvent the wheel"} approach. The generated pdb files can be visualized using either CHIMERA or PyMol softwares. 
+
+\subsection{Step by Step guide}
+\subsubsection{Checking Dependencies}
+Before stariting the installation procedure we have to check whether or not we have the required packages installed. Open a shell terminal windows and enter into the python3 console. Type the following to see if the packages are installed.
+\begin{lstlisting}[language=Python]
+$ python3
+>>> import numpy
+>>> numpy.version.version
+'1.10.2'
+>>> import scipy
+>>> scipy.version.version
+'0.17.0'
+>>> import tkinter
+>>> tkinter.TkVersion
+8.5
+>>> tkinter.TclVersion
+8.5
+>>> import Bio.PDB
+>>> import Bio
+>>> print(Bio.__version__)
+1.66
+\end{lstlisting}
+Note that it may work with older versions, these versions are the ones used to build the software. If some of this imports do not import the package you must installed before using our software. 
+\subsubsection{Installing the Package}
+
+
+
+\subsubsection{Usage}
+\paragraph{CLI Usage}
+ \paragraph{Graphical Usage}
+ The graphical usage is set by default. You only need to call the software via terminal like this. 
+\begin{lstlisting}
+ $ python3 -m PyEDA
+ \end{lstlisting}
+ 
+ We have experienced some troubles depending on the OS used in the PDBio class. In some cases the superimposed file "pdbcodealign.pdb" is saved with extra "END" lines that do not let the user directly see the pdb structure in PyMol. If it is your case, we provide ypu here a fast awk one-liner to solve the problem. 
+ \begin{lstlisting}
+ $ awk '$0 ! ~ /^END$/ {print $0} END {print "END"}' 1msfalign.pdb > corrected.pdb
+ \end{lstlisting}
+\section{Analysis of the performance and results}
+\subsection{Comparison of the results with Van Aalten 1998}
+In order to test the performance of our software we have used the analysis performed in Van Aalten et al 1998 \citep{VanAalten1998} of a NMR structure of the Myb DNA-Binding Domain. We have been able to reproduce 2 important figures of the article. 
+In the article they have used an Essential Dynamics approach to analyse Normal Modes of the NMR structure Mouse c-Myb R2R3 [PDB entry 1MSF\citep{Ogata1994}]. They have found large and concerted fluctuations of atoms that describe a hinge-bending motion between R2 and R3 repeats. They have observed that only with NMR data. After that, the authors have also used a Molecular Dynamics Simulation to predict and quantify the motion. Finally they have tested the effect of a proline to alanine mutation into the motion observed. The motion in the mutated protein was found to be enhanced. 
+
+The 1MSF structure is a NMR file with 25 Models of a binding protein to the a DNA chain. In the figure \ref{fig:1MSF_super} we can see the first output of PyEDA, a superimposed structure of all the structural modes using PyMol\citep{PyMOL}. 
+\begin{figure} [h]
+\centering
+\includegraphics[scale=0.4]{pymol_1mSF}
+\caption{1MSF superimposed structure}
+\label{fig:1MSF_super}
+\end{figure}
+
+
+\begin{figure} [h]
+\centering
+\includegraphics[scale=0.6]{1MSF_figure}
+\caption{Eigenvalues against their corresponding eigenvector indexes}
+\label{fig:1MSF_figure}
+\end{figure}
+
+\begin{figure} [h]
+\centering
+\includegraphics[scale=0.19]{Normal_Modes_residue}
+\caption{After the projections were computed for each eigenvector, the two structures with the minimum and maximum projections along that eigenvector were used for the superposition. The window size used are 15aa.}
+\label{fig:1MSF_residue}
+\end{figure}
+
+
+
+
+
+\bibliography{Bibfile}
+
+\end{document}
