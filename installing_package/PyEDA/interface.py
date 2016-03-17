@@ -26,7 +26,7 @@ import os.path
 import os
 import sys
 from tkinter import filedialog
-import module_david as mdl
+import helper_module as mdl
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg

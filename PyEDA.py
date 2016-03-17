@@ -3,7 +3,7 @@
 import os
 import sys
 import argparse as arg
-import module_david as mdl
+import helper_module as mdl
 import Bio.PDB as pdb
 import edanalysis as eda
 # import __main__
