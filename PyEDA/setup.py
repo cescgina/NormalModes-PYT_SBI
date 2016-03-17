@@ -9,4 +9,6 @@ setup(name='PyEDA',
       author_email='joanfrancesc.gilabert01@estudiant.upf.edu & ' +
       'david.mas01@estudiant.upf.edu',
       url='http://bit.ly/PyEDA',
-      packages=['PyEDA', 'main'])
+      packages=['PyEDA'],
+      package_data={'': ['image.gif']},
+      include_package_data=True)

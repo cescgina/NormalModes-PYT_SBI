@@ -3,9 +3,9 @@
 import os
 import sys
 import argparse as arg
-import helper_module as mdl
 import Bio.PDB as pdb
-import edanalysis as eda
+from . import helper_module as mdl
+from . import edanalysis as eda
 # import __main__
 # __main__.pymol_argv = ['pymol', '-qc']
 # import pymol
@@ -61,7 +61,7 @@ if not os.path.exists(pathplots):
     os.mkdir(pathplots)
 
 if not options.graphical:
-    import interface as inter
+    from . import interface as inter
     interface = inter.EDA_app()
     interface.mainloop()
     sys.exit("The application has been closed.\n")

@@ -26,12 +26,12 @@ import os.path
 import os
 import sys
 from tkinter import filedialog
-import helper_module as mdl
+from . import helper_module as mdl
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import Bio.PDB as pdb
-import edanalysis as eda
+from . import edanalysis as eda
 
 
 # implement the default mpl key bindings
@@ -121,7 +121,8 @@ class StartPage(tkinter.Frame):
         title = tkinter.Label(self, text="Welcome to the ED Analyser.",
                       font=("Helvetica", 25))
         title.grid(row=1, column=0, columnspan=3)
-        photo = tkinter.PhotoImage(file="image.gif")
+        path_to_img = os.path.dirname(os.path.realpath(__file__))
+        photo = tkinter.PhotoImage(file=path_to_img+"/image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
         w.grid(row=0, column=0, columnspan=3)
@@ -186,7 +187,8 @@ class initial_root(tkinter.Frame):
                       font=("Helvetica", 25), justify= "center")
         title.grid(row=1, column=0, columnspan=5)
         ### photo
-        photo = tkinter.PhotoImage(file="image.gif")
+        path_to_img = os.path.dirname(os.path.realpath(__file__))
+        photo = tkinter.PhotoImage(file=path_to_img+"/image.gif")
         w = tkinter.Label(self, image=photo)
         w.photo = photo
         w.grid(row=0, column=0, columnspan=5)
