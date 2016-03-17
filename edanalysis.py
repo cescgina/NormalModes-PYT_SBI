@@ -4,8 +4,6 @@ provides several classes to perform the EDA.
 Classes:
     EDAnalysis -> It is the main class, provides an easy interface to
     carry out ED
-    OneChainSelect -> Class derived from the Bio.PDB.Select class,
-    allows you to write PDBs with a single model
     WrongModeException -> Specific Exception class that indicates a misuse
     of the EDA program
 """
@@ -54,7 +52,7 @@ class EDAnalysis:
         coords_array -> nxN Numpy array with the N coordinates for the n models
         means -> 1xN Numpy array with the means of the N coordinates over the n
             models
-        C -> NxN Numoy array that contains the covariance matrix
+        C -> NxN Numpy array that contains the covariance matrix
         eigvc -> Numpy array with the eigenvectors of the covariance matrix
         eigvl -> Numpy array with the eigenvalues of the covariance matrix
     """
@@ -394,15 +392,6 @@ class EDAnalysis:
         if origin != 'interface':
             fig.savefig(filename, bbox_inches='tight', dpi=300)
         return fig
-
-
-class OneChainSelect(pdb.Select):
-    """
-    Custom class derived from Bio.PDB.Select to write only one model to a PDB
-    file, used only to visualize the trajectories of the eigenvectors
-    """
-    def accept_model(self, model):
-        return model.get_id() == 0
 
 
 class WrongModeException(Exception):

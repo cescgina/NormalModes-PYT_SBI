@@ -10,5 +10,5 @@ setup(name='PyEDA',
       'david.mas01@estudiant.upf.edu',
       url='http://bit.ly/PyEDA',
       packages=['PyEDA'],
-      package_data={'': ['image.gif']},
-      include_package_data=True)
+      package_data={'': ['image.gif']})
+# include_package_data=True)

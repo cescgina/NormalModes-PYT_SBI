@@ -4,8 +4,6 @@ provides several classes to perform the EDA.
 Classes:
     EDAnalysis -> It is the main class, provides an easy interface to
     carry out ED
-    OneChainSelect -> Class derived from the Bio.PDB.Select class,
-    allows you to write PDBs with a single model
     WrongModeException -> Specific Exception class that indicates a misuse
     of the EDA program
 """
@@ -394,15 +392,6 @@ class EDAnalysis:
         if origin != 'interface':
             fig.savefig(filename, bbox_inches='tight', dpi=300)
         return fig
-
-
-class OneChainSelect(pdb.Select):
-    """
-    Custom class derived from Bio.PDB.Select to write only one model to a PDB
-    file, used only to visualize the trajectories of the eigenvectors
-    """
-    def accept_model(self, model):
-        return model.get_id() == 0
 
 
 class WrongModeException(Exception):

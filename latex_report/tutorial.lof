@@ -1,0 +1,10 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces Entire Workflow for EDA\relax }}{5}
+\contentsline {figure}{\numberline {2}{\ignorespaces Description of the command line usage\relax }}{9}
+\contentsline {figure}{\numberline {3}{\ignorespaces 1MSF superimposed structure\relax }}{10}
+\contentsline {figure}{\numberline {4}{\ignorespaces Eigenvalues against their corresponding eigenvector indexes\relax }}{11}
+\contentsline {figure}{\numberline {5}{\ignorespaces After the projections were computed for each eigenvector, the two structures with the minimum and maximum projections along that eigenvector were used for the superposition. The window size used are 15aa.\relax }}{12}
+\contentsline {figure}{\numberline {6}{\ignorespaces Projected models from 1MSF with total full-span of 3 and step of 0.1 using the first eigenvector\relax }}{13}
+\contentsline {figure}{\numberline {7}{\ignorespaces PyMol\citep {PyMOL} visualitzation of the a) original 1joy structure directly retrieved from the pdb and the b) superimposed 1joy structure by PyEDA.\relax }}{14}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {1joy from pdb}}}{14}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Superimposed 1joy}}}{14}
+\contentsline {figure}{\numberline {8}{\ignorespaces Plot of the most different projected structures. Window size used, 15aa.\relax }}{14}

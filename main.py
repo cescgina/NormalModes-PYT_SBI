@@ -140,11 +140,12 @@ ED.superimpose_models()
 
 if options.mode == 'NMR':
     head = mdl.store_header_text(pathname+pdbfile)
-    io = pdb.PDBIO()
-    io.set_structure(ED.structure)
-    io.save(pdb_superimp)
-    mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
-    os.remove(pdb_superimp)
+
+io = pdb.PDBIO()
+io.set_structure(ED.structure)
+io.save(pdb_superimp)
+mdl.merge_the_header(pdb_superimp, head, pathname+pdbalignedfile)
+os.remove(pdb_superimp)
 
 if options.verb:
     print("Calculating means and coordinates")
