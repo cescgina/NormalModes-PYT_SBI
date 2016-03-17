@@ -432,14 +432,17 @@ class waiting_window(tkinter.Frame):
         pdbfile = self.controller.app_data["pdbfilename"]
         atom = self.controller.app_data["atom"]
         mode = self.controller.app_data["mode"]
+
         sys.stderr.write("the selcted mode is: {} ".format(mode))
         pdbalignedfile = str(pdb_id) + 'align.pdb'
         pdb_superimp = str(pathname) + str(pdb_id) + 'superimp.pdb'
+
         if not os.path.exists(str(pathname)+str(pdbfile)):
             pdbobj = pdb.PDBList()
             pdbobj.retrieve_pdb_file(pdb_id, pdir=str(pathname))
             sys.stderr.write("The structure {} have been \
 retrieved.\n".format(pdb_id))
+
         atom_list = []
         if atom == 'CA':
             atom_list = ['CA']
@@ -447,6 +450,7 @@ retrieved.\n".format(pdb_id))
             atom_list = ['N', 'CA', 'C', 'O']
         else:
             atom_list = ['N', 'CA', 'C', 'O']
+
         if mode == 'MD':
             pdbref = pdb.PDBList()
             ref_file = pdbref.retrieve_pdb_file(pdb_id, pdir=pathname)
@@ -515,37 +519,48 @@ class plot_window(tkinter.Frame):
         tkinter.Frame.__init__(self, parent)
         self.controller = controller
         self.canvas = None
-        eigen_button = tkinter.Button(self, text="Eigen Vectors Plot", command=self.eigen_plot)
-        eigen_button.pack()
+        grid_frame = tkinter.Frame(self)
+        grid_frame.pack(side=tkinter.LEFT)
+        label = tkinter.Label(grid_frame, text="Choose a plot to visualize:",
+                              font=("Helvetica", 15))
+        label.grid(row=0, column=0)
+        eigen_button = tkinter.Button(grid_frame, text="Eigen Vectors Plot", command=self.eigen_plot)
+        eigen_button.grid(row=0, column=1)
 
-        RMSD_button = tkinter.Button(self, text="RMSD Plot", command=self.RMSD_plot)
-        RMSD_button.pack()
+        RMSD_button = tkinter.Button(grid_frame, text="RMSD Plot", command=self.RMSD_plot)
+        RMSD_button.grid(row=0, column=2)
         ### generate a trajectory file
         ### trajectory
         ### eigv entry
         self.entry_evc = tkinter.IntVar()
             ### entry
-        label = tkinter.Label(self, text="Enter the EVC for the trajectory:",
+        label2 = tkinter.Label(grid_frame, text="Choose a Eigen Vector for the trajectory:",
                               font=("Helvetica", 15))
-        label.pack
-        self.entry = tkinter.Entry(self, bd=2, width=5, \
+        label2.grid(row=1, column=0)
+        self.entry = tkinter.Entry(grid_frame, bd=2, width=5, \
             textvariable=self.entry_evc)
-        self.entry.pack()
+        self.entry.grid(row=1, column=1)
+
+        label2 = tkinter.Label(grid_frame, text="ev index (1-10)",
+                              font=("Helvetica", 15))
+        label2.grid(row=1, column=2)
 
         self.entry_time = tkinter.IntVar()
             ### entry
-        label_time = tkinter.Label(self, text="Enter maximum span for the trajectory:",
+        label_time = tkinter.Label(grid_frame, text="Enter maximum span for the trajectory:",
                               font=("Helvetica", 15))
-        label_time.pack
-        self.entry_time = tkinter.Entry(self, bd=2, width=5, \
+        label_time.grid(row=2, column=0)
+        self.entry_time = tkinter.Entry(grid_frame, bd=2, width=5, \
             textvariable=self.entry_time)
-        self.entry_time.pack()
+        self.entry_time.grid(row=2, column=1)
 
-        traj_but=tkinter.Button(self, text="Get the trajectory", \
+        label3 = tkinter.Label(grid_frame, text="span (1-3)",
+                              font=text_fornt)
+        label3.grid(row=2, column=2)
+
+        traj_but=tkinter.Button(grid_frame, text="Get the trajectory", \
             command=self.trajectory)
-        traj_but.pack()
-        label2 = tkinter.Label(self)
-        label2.pack()
+        traj_but.grid(row=3, column=0, columnspan=3)
 
             ### close button
         close_button = tkinter.Button(self, text="Close", command=self.quit)
