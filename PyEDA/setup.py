@@ -8,7 +8,7 @@ setup(name='PyEDA',
       author='JF Gilabert & D Mas',
       author_email='joanfrancesc.gilabert01@estudiant.upf.edu & ' +
       'david.mas01@estudiant.upf.edu',
-      url='http://bit.ly/PyEDA',
+      url='http://bit.ly/PyEDA_git',
       packages=['PyEDA'],
       package_data={'': ['image.gif']})
 # include_package_data=True)

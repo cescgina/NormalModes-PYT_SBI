@@ -21,7 +21,6 @@ Classes:
 """
 
 import tkinter
-from tkinter import ttk
 import os.path
 import os
 import sys
@@ -234,7 +233,7 @@ class initial_root(tkinter.Frame):
             value = 'MD', command = self.select_m )
 
         m1.grid( row=4, column=2)
-        m2.grid( row=4, column=3, columnspan=2)
+        m2.grid( row=4, column=3)
 
         self.label_m = tkinter.Label(self)
         self.label_m.grid(row=5, column=2, columnspan=3)
@@ -248,12 +247,9 @@ class initial_root(tkinter.Frame):
             value = 'CA', command = self.select_a)
         r2 = tkinter.Radiobutton( self, text="Backbone", \
             variable = self.var, value = 'Back', command = self.select_a )
-        r3 = tkinter.Radiobutton( self, text="All", variable = self.var, \
-            value = 'all', command = self.select_a )
 
         r1.grid( row=7, column=2)
         r2.grid( row=7, column=3)
-        r3.grid( row=7, column=4)
 
         self.label_a = tkinter.Label(self)
         self.label_a.grid(row=8, column=2, columnspan=3)
@@ -450,8 +446,6 @@ retrieved.\n".format(pdb_id))
             atom_list = ['CA']
         elif atom == 'Back':
             atom_list = ['N', 'CA', 'C', 'O']
-        else:
-            atom_list = ['N', 'CA', 'C', 'O']
 
         if mode == 'MD':
             pdbref = pdb.PDBList()
@@ -513,6 +507,8 @@ class plot_window(tkinter.Frame):
         matplotlib integration in tkinter.
         RMSD_plot -> It shows the RMSD vs Residue plot. It uses the matplotlib
         integration in tkinter.
+        trajectory -> It generates a trajectory file given the evc and the
+        total span set for the user.
 
     Attributes:
 
