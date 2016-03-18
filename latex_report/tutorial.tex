@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{hyperref}
 \newtheorem{theorem}{Theorem}
 \usepackage{mathtools}
 \usepackage{enumerate}
@@ -27,11 +28,12 @@
 }
 \usepackage{subfig}
 
+
 \begin{document}
 \maketitle
 
 \begin{abstract}
-In this project we have developed PyEDA, a python based software capable of analyzing Normal Modes from NMR structures and MD trajectories in pdb format. It uses an Essential Dynamics approach and it gives different outputs like a structure pdb file with the superimposed structures, the eigenvalues in increasing order, the fluctuations of the structure by residue and a final structure with the main motions of defined normal modes applied. It can be used as a python Package,  with a tkinter interface and also as a CLI standalone program. The main dependencies of the software are BioPython\citep{Cock2009}, Tkinter, Matplotlib\citep{Hunter2007}, NumPy and SciPy\citep{VanderWalt2011} packages.
+In this project we have developed PyEDA, a python based software capable of analyzing Normal Modes from NMR structures and MD trajectories in pdb format. It uses an Essential Dynamics approach and it gives different outputs like a structure pdb file with the superimposed structures, the eigenvalues in increasing order, the fluctuations of the structure by residue and a final structure with the main motions of defined normal modes applied. It can be used as a python Package,  with a tkinter interface and also as a CLI standalone program. The main dependencies of the software are BioPython\citep{Cock2009}, Tkinter, Matplotlib\citep{Hunter2007}, NumPy and SciPy\citep{VanderWalt2011} packages. This program can be downloaded from \url{https://github.com/cescgina/NormalModes-PYT\_SBI}.
 \end{abstract}
 
 \tableofcontents
@@ -262,9 +264,7 @@ As we mentioned before, our program can be used with a graphical interface or vi
  $ python3 -m PyEDA
  \end{lstlisting}
  
- The best way to see how the interface works is by checking the video tutorial or trying it yourself. You can go to the video-tutorial following the link:  \\
- 
- However, the different pages and windows are described below. 
+ The best way to see how the interface works is by trying it yourself.  However, the different pages and windows are described below. \\
  
  \begin{enumerate}
  \item In the path to the results, the first window it appears is the Start page. The function of this page is just to improve the application status of this software. From here, we can go to the about EDA page and to the starting point of our analysis. 

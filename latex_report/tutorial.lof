@@ -1,12 +1,12 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces Entire Workflow for EDA\relax }}{5}
-\contentsline {figure}{\numberline {2}{\ignorespaces Description of the command line usage\relax }}{11}
-\contentsline {figure}{\numberline {3}{\ignorespaces 1MSF superimposed structure\relax }}{12}
-\contentsline {figure}{\numberline {4}{\ignorespaces Eigenvalues against their corresponding eigenvector indexes\relax }}{13}
-\contentsline {figure}{\numberline {5}{\ignorespaces After the projections were computed for each eigenvector, the two structures with the minimum and maximum projections along that eigenvector were used for the superposition. The window size used are 15aa.\relax }}{14}
-\contentsline {figure}{\numberline {6}{\ignorespaces Projected models from 1MSF with total full-span of 3 and step of 0.1 using the first eigenvector\relax }}{15}
-\contentsline {figure}{\numberline {7}{\ignorespaces PyMol\citep {PyMOL} visualitzation of the a) original 1joy structure directly retrieved from the pdb and the b) superimposed 1joy structure by PyEDA.\relax }}{16}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {1joy from pdb}}}{16}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Superimposed 1joy}}}{16}
-\contentsline {figure}{\numberline {8}{\ignorespaces Plot of the most different projected structures. Window size used, 15aa.\relax }}{16}
-\contentsline {figure}{\numberline {9}{\ignorespaces Plot of the first 30 eigenvalues\relax }}{17}
-\contentsline {figure}{\numberline {10}{\ignorespaces Plot of the RMSD of each residue for the first 4 eigenvectors\relax }}{18}
+\contentsline {figure}{\numberline {1}{\ignorespaces Entire Workflow for EDA\relax }}{6}{figure.caption.2}
+\contentsline {figure}{\numberline {2}{\ignorespaces Description of the command line usage\relax }}{12}{figure.caption.5}
+\contentsline {figure}{\numberline {3}{\ignorespaces 1MSF superimposed structure\relax }}{13}{figure.caption.6}
+\contentsline {figure}{\numberline {4}{\ignorespaces Eigenvalues against their corresponding eigenvector indexes\relax }}{14}{figure.caption.7}
+\contentsline {figure}{\numberline {5}{\ignorespaces After the projections were computed for each eigenvector, the two structures with the minimum and maximum projections along that eigenvector were used for the superposition. The window size used are 15aa.\relax }}{15}{figure.caption.8}
+\contentsline {figure}{\numberline {6}{\ignorespaces Projected models from 1MSF with total full-span of 3 and step of 0.1 using the first eigenvector\relax }}{16}{figure.caption.9}
+\contentsline {figure}{\numberline {7}{\ignorespaces PyMol\citep {PyMOL} visualitzation of the a) original 1joy structure directly retrieved from the pdb and the b) superimposed 1joy structure by PyEDA.\relax }}{17}{figure.caption.10}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {1joy from pdb}}}{17}{subfigure.7.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Superimposed 1joy}}}{17}{subfigure.7.2}
+\contentsline {figure}{\numberline {8}{\ignorespaces Plot of the most different projected structures. Window size used, 15aa.\relax }}{17}{figure.caption.11}
+\contentsline {figure}{\numberline {9}{\ignorespaces Plot of the first 30 eigenvalues\relax }}{18}{figure.caption.12}
+\contentsline {figure}{\numberline {10}{\ignorespaces Plot of the RMSD of each residue for the first 4 eigenvectors\relax }}{19}{figure.caption.13}
