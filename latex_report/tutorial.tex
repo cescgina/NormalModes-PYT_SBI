@@ -109,12 +109,12 @@ Therefore, the normal modes can be sorted using the eigenvalues as representatio
 The next step is the projection of the principal components into principal coordinates. To do so, the following 2 equations have been used:
 
 \begin{equation}
-p_{i}(k)=\mu_{i}\cdot (x(k) - <x>) 
+p_{i}(k)=\mu_{i}\cdot (x(k) - \langle x \rangle) 
 \label{eq:projection}
 \end{equation}
 
 \begin{equation}
-x'_{i}(k)=p_{i}(k) \cdot \mu_{i} + <x>
+x'_{i}(k)=p_{i}(k) \cdot \mu_{i} +  \langle x \rangle
 \label{eq:coord}
 \end{equation}
 In equation \eqref{eq:projection} we project the eigenvectors to the original coordinates to get the principal coordinates or $p_{i}$ and then, in equation \eqref{eq:coord} we transform back these projections to Cartesian coordinates. This is an important step for visualization of the motions. In equation \eqref{eq:projection}, the eigenvector is represented with the $\mu$ and the particular coordinate is represented with $x(k)$. In Equation \eqref{eq:coord}, the representation stands.\citep{Hayward2008}
@@ -137,7 +137,7 @@ As you can see the main dependencies are included in the figure and represented 
 \subsection{Step by Step guide}
 \subsubsection{Checking Dependencies}
 Before starting the installation procedure we have to check whether or not we have the required packages installed. Open a shell terminal window and enter into the python3 console. Type the following to see if the packages are installed.
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=python]
 $ python3
 >>> import numpy
 >>> numpy.version.version
@@ -159,7 +159,7 @@ Note that it may work with older versions, these versions are the ones used to b
 
 \subsubsection{Installing the Package}
 We provide a package with all the code by means of the python disutils distribution system. Once you have obtained the package you can install it with the command
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=Bash]
 sudo python3 setup.py install
 \end{lstlisting}
 Alternatively you can install it without the need of elevated permissions with 
@@ -237,9 +237,9 @@ As we mentioned before, our program can be used with a graphical interface or vi
  
  ....\\
  
- We have experienced some troubles depending on the OS used in the PDBio class. In some cases the superimposed file "pdbcodealign.pdb" is saved with extra "END" lines that do not let the user directly see the pdb structure in PyMol. If it is your case, we provide you here a fast awk one-liner to solve the problem. 
+ We have experienced some troubles depending on the OS used in the PDBio class. In some cases the superimposed file "pdbcodealign.pdb" is saved with extra "END" lines that do not let the user directly see the pdb structure in PyMol. If it is your case, we provide you here a fast awk one-liner to solve the problem.  
  \begin{lstlisting}
- $ awk '$0 ! ~ /^END$/ {print $0} END {print "END"}' 1msfalign.pdb > corrected.pdb
+ $ awk '$0 !  /^END$/ {print $0} END {print "END"}' 1msfalign.pdb > corrected.pdb
  \end{lstlisting}
  \paragraph{CLI Usage}
  The command line interface has been built using the argparse library, in figure \ref{fig:usage} a complete description of all the options available can be seen. This description can be accessed with the commands:
