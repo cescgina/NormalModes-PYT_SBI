@@ -10,4 +10,4 @@ In this project we have developed PyEDA, a python based software capable of anal
 
 ### DOWNLOAD
 
-This Software is under MIT license. Please, read the attached license file in this repository before downloading. You can download the compressed file PyEDA-1.0.tar.gz and installed following the instructions inside. 
+This Software is under MIT license. Please, read the attached license file in this repository before downloading. You can download the compressed file PyEDA-1.0.tar.gz and install following the instructions inside. 
