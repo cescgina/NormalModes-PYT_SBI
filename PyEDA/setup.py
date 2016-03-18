@@ -10,5 +10,10 @@ setup(name='PyEDA',
       'david.mas01@estudiant.upf.edu',
       url='http://bit.ly/PyEDA_git',
       packages=['PyEDA'],
-      package_data={'': ['image.gif']})
-# include_package_data=True)
+      package_data={'': ['image.gif']},
+      classifiers=[
+        "Programmin Language :: Python :: 3",
+          "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Intended Audience :: Science/Research",
+        "Developement Status :: 4 - Beta"])

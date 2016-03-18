@@ -1,3 +1,11 @@
+PyEDA is a Python3 package design to easily perform Essential Dynamics analysis
+of proteins. It can be imported to write your own analysis or use the
+predefined script (with a GUI or CLI, see below) that calculates the
+eigenvectors of the covariance matrix, plots them and projects the structure
+onto a certain number of principal eigenvectors and generates a trajectory
+corresponding to the eigenvector.
+
+
 Installation instructions:
 
 To install PyEDA in your computer you just need a Python3 distribution
