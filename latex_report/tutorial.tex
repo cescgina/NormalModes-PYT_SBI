@@ -1,4 +1,4 @@
-\title{ PyEDA: \\ A Software to analyze Normal Modes in NMR and MD Structures using an Essential Dynamics approach.\thanks{ Introduction to Pythons $\&$ Structural Bioinformatics - M. Sc. in Bioinformatics for Health Sciences at Universitat Pompeu Fabra}}
+\title{ PyEDA: \\ A Software to analyze Normal Modes in NMR and MD Structures using an Essential Dynamics approach.\thanks{ Introduction to Python $\&$ Structural Bioinformatics - M. Sc. in Bioinformatics for Health Sciences at Universitat Pompeu Fabra}}
 \author{Joan Francesc Gilabert  $\&$ David Mas  - Prof:Javi Garcia $\&$ Baldo Oliva. }
 \date{\today}
 
@@ -312,8 +312,6 @@ It is also possible to see how the residues between the 2 repetitions and the en
 
 
 
-
-
 \subsection{Testing superimposition with 1JOY structure}
 In order to test the first steps of the software analysis we have used the solution structure of the homodimeric domain of Envz protein from Escherichia coli [PDB entry 1JOY\citep{Tomomori1999}]. This structure is also a NMR and as can be see in figure \ref{fig:1joy_notsuper} the database pdbfile is not superimposed.  
 
@@ -335,6 +333,16 @@ This structure is useful to see how protein with more than one chain can be also
 \caption{Plot of the most different projected structures. Window size used, 15aa.}
 \label{fig:1joy_residue}
 \end{figure}
+
+\subsection{Testing analysis with MD data}
+
+Working with NMR data is fairly easy, you just need a pdb with the solved structure. However, working with Molecular Dynamics data is a bit more complicated. We won't go into into details here, but there a few aspects to consider when running an MD simulation (force fields, time, etc.). It also happens that we do not have any MD data, so to build the MD support we had to resort to publicly available data. Fortunately, we found a database provided by several research groups (IRB, UB and BSC, among others)\citep{Model} that made available MD data in a pdb-like format.\\
+
+To test the MD analysis capabilities we tried to reproduce the work of Amadei et al, 1993\citep{Amadei1993}. In this paper, they studied a hen egg-white lysozyme (PDB entry 3LYZ) by using an essential dynamics approach. We tried to get MD data for this protein, but we were not able to find any. Interstingly, the Model database had data on a structure with PDB code 1PDX, which according to the PDB is also a hen egg-white lysozyme, so we used this data to obtain and approximation.\\
+
+According to Model, the data was generated with the AMBER8.0 program, a 	parm99 tip3P force field, 26483 total atoms and a simulation time of 20000 ps. We chose to download only data from the backbone atoms and processed it with the program pcaunzip that the database provided. This yielded a pdb file with 200 models and 516 atoms each. Note that despite the fact that we had data for all the backbone atoms, we performed the analysis only with the alpha carbon. The reason for this is the extraordinary amount of memory that is required to process all the backbone atoms. All executions were carried on in a laptop with a quad-core Intel i7-5500U, with 8GB of memory. We tried to run the analysis with all Backbone atoms, but the computer slowed down to a point it was no longer usable, so we advice to proceed with caution when working with MD data, or to use a computer cluster to run this kind of heavy computations. It is worth noting that none of this happened with the easier NMR computations, where the program via the CLI finished in about a minute.\\
+
+
 \subsection{Conclusions and Caveats}
 PyEDA is a wrap up of the Essential Dynamics approach to get a Normal Mode Analysis of any NMR pdb structure and any MD pdb-like file. As conclusion we may stress that PyEDA is a promising and useful tool specially for the analysis of protein dynamics.  It is a unified and complete analysis tool to get protein motion. It is designed to easily uncover and quantify the functional motions of NMR and MD structures. It can be used autonomously using the guided graphical interface or using the CLI which gives the user the possibility to automatize the process. It also have a easy and user-friendly installation process and it is based on the most used programming language, python. 
 

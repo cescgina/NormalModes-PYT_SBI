@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2016.2.22)  17 MAR 2016 22:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2016.2.22)  18 MAR 2016 15:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -691,20 +691,7 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 31.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-Package natbib Warning: Citation `Cock2009' on page 1 undefined on input line 3
-4.
-
-
-Package natbib Warning: Citation `Hunter2007' on page 1 undefined on input line
- 34.
-
-
-Package natbib Warning: Citation `VanderWalt2011' on page 1 undefined on input 
-line 34.
-
-(./tutorial.toc)
+) (./tutorial.toc)
 \tf@toc=\write4
 \openout4 = `tutorial.toc'.
 
@@ -724,11 +711,6 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 47.
 
-
-Package natbib Warning: Citation `Hayward2008' on page 2 undefined on input lin
-e 52.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 54--55
 
  []
@@ -739,31 +721,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 56--57
  []
 
 
-Package natbib Warning: Citation `Tirion1996' on page 2 undefined on input line
- 69.
-
-
-Package natbib Warning: Citation `Hayward2008' on page 2 undefined on input lin
-e 69.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 69--70
 
  []
 
 [2]
-
-Package natbib Warning: Citation `Amadei1993' on page 3 undefined on input line
- 72.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 72--73
 
  []
-
-
-Package natbib Warning: Citation `Amadei1993' on page 3 undefined on input line
- 74.
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 74--75
@@ -771,24 +736,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 74--75
  []
 
 
-Package natbib Warning: Citation `Hayward2008' on page 3 undefined on input lin
-e 76.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 76--77
 
  []
 
 [3]
-
-Package natbib Warning: Citation `Amadei1993' on page 4 undefined on input line
- 95.
-
-
-Package natbib Warning: Citation `Gargallo2003' on page 4 undefined on input li
-ne 95.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 94--96
 
  []
@@ -799,10 +751,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 103--104
  []
 
 
-Package natbib Warning: Citation `Gargallo2003' on page 4 undefined on input li
-ne 105.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
  []
@@ -811,17 +759,9 @@ Missing character: There is no â in font cmr12!
 Missing character: There is no ˆ in font cmr12!
 Missing character: There is no ’ in font cmr12!
 
-Package natbib Warning: Citation `Hayward2008' on page 4 undefined on input lin
-e 107.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 107--108
 
  []
-
-
-Package natbib Warning: Citation `Hayward2008' on page 4 undefined on input lin
-e 120.
 
 [4] <DyagramFlow_NMA.png, id=30, 787.94376pt x 1128.215pt>
 File: DyagramFlow_NMA.png Graphic file (type png)
@@ -837,14 +777,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 133--134
 [5
 
  <./DyagramFlow_NMA.png>]
-
-Package natbib Warning: Citation `Cock2009' on page 6 undefined on input line 1
-35.
-
-
-Package natbib Warning: Citation `VanderWalt2011' on page 6 undefined on input 
-line 135.
-
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2014/03/04 1.5c listings language file
 )
@@ -904,27 +836,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 259--260
  []
 
 [8]
-
-Package natbib Warning: Citation `VanAalten1998' on page 9 undefined on input l
-ine 263.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 263--264
 
  []
 
 
-Package natbib Warning: Citation `Ogata1994' on page 9 undefined on input line 
-265.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 265--266
 
  []
-
-
-Package natbib Warning: Citation `PyMOL' on page 9 undefined on input line 267.
-
 
 [9 <./usage.png>] <pymol_1mSF.png, id=53, 647.41875pt x 671.50874pt>
 File: pymol_1mSF.png Graphic file (type png)
@@ -942,10 +861,6 @@ Package pdftex.def Info: 1MSF_figure.png used on input line 280.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-Package natbib Warning: Citation `VanAalten1998' on page 10 undefined on input 
-line 285.
-
 <Normal_Modes_residue.jpg, id=55, 2055.68pt x 1600.98125pt>
 File: Normal_Modes_residue.jpg Graphic file (type jpg)
 
@@ -960,55 +875,30 @@ File: 1msf_allstates.png Graphic file (type png)
 Package pdftex.def Info: 1msf_allstates.png used on input line 296.
 (pdftex.def)             Requested size: 341.43307pt x 275.40375pt.
 
-
-Package natbib Warning: Citation `VanAalten1998' on page 10 undefined on input 
-line 302.
-
-
-Package natbib Warning: Citation `VanAalten1998' on page 10 undefined on input 
-line 302.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 302--303
 
  []
 
 [10 <./pymol_1mSF.png>]
 
-Package natbib Warning: Citation `PyMOL' on page 11 undefined on input line 304
-.
-
-
-Package caption Warning: \label without proper \caption on input line 296.
+Package caption Warning: \label without proper \caption on input line 297.
 See the caption package documentation for explanation.
 
 
 LaTeX Warning: Reference `fig:1msf_all' on page 11 undefined on input line 304.
 
 
-
-Package natbib Warning: Citation `Tomomori1999' on page 11 undefined on input l
-ine 318.
-
 <1joy_pdb.png, id=61, 620.3175pt x 613.29124pt>
 File: 1joy_pdb.png Graphic file (type png)
  <use 1joy_pdb.png>
-Package pdftex.def Info: 1joy_pdb.png used on input line 322.
+Package pdftex.def Info: 1joy_pdb.png used on input line 320.
 (pdftex.def)             Requested size: 216.24373pt x 213.7942pt.
 
 <1joy_super.png, id=62, 748.7975pt x 506.89375pt>
 File: 1joy_super.png Graphic file (type png)
  <use 1joy_super.png>
-Package pdftex.def Info: 1joy_super.png used on input line 324.
+Package pdftex.def Info: 1joy_super.png used on input line 322.
 (pdftex.def)             Requested size: 216.24373pt x 146.38438pt.
-
-
-Package natbib Warning: Citation `PyMOL' on page 11 undefined on input line 325
-.
-
-
-Package natbib Warning: Citation `PyMOL' on page 11 undefined on input line 325
-.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1017,74 +907,69 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: 1joy_residue.png Graphic file (type png)
 
 <use 1joy_residue.png>
-Package pdftex.def Info: 1joy_residue.png used on input line 334.
+Package pdftex.def Info: 1joy_residue.png used on input line 332.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 339--340
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 341--342
+
+ []
+
 [12 <./Normal_Modes_residue.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 343--344
 
-Package natbib Warning: Citation `Cock2009' on page 13 undefined on input line 
-343.
-
-
-Package natbib Warning: Citation `Hunter2007' on page 13 undefined on input lin
-e 343.
-
-
-Package natbib Warning: Citation `VanderWalt2011' on page 13 undefined on input
- line 343.
+ []
 
 [13 <./1msf_allstates.png>] [14 <./1joy_pdb.png> <./1joy_super.png> <./1joy_res
-idue.png>] (./tutorial.lof
-
-Package natbib Warning: Citation `PyMOL' on page 15 undefined on input line 7.
-
-)
+idue.png>] [15] (./tutorial.lof)
 \tf@lof=\write5
 \openout5 = `tutorial.lof'.
 
-
-No file tutorial.bbl.
-
-Package natbib Warning: There were undefined citations.
-
-[15
+ (./tutorial.bbl
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no © in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ­ in font cmr12!
+) [16
 
 ] (./tutorial.aux)
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 17229 strings out of 495025
- 332264 string characters out of 6181515
- 379975 words of memory out of 5000000
- 20107 multiletter control sequences out of 15000+600000
- 16807 words of font info for 65 fonts, out of 8000000 for 9000
+ 17257 strings out of 495025
+ 332804 string characters out of 6181515
+ 380128 words of memory out of 5000000
+ 20134 multiletter control sequences out of 15000+600000
+ 16498 words of font info for 64 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 55i,10n,65p,1005b,1325s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,10n,65p,1076b,1325s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-msy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pf
-b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on tutorial.pdf (15 pages, 1321033 bytes).
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on tutorial.pdf (16 pages, 1333861 bytes).
 PDF statistics:
- 130 PDF objects out of 1000 (max. 8388607)
- 81 compressed objects within 1 object stream
+ 133 PDF objects out of 1000 (max. 8388607)
+ 83 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  58 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -6,10 +6,6 @@ import argparse as arg
 import PyEDA.helper_module as mdl
 from PyEDA import edanalysis as eda
 import Bio.PDB as pdb
-# import __main__
-# __main__.pymol_argv = ['pymol', '-qc']
-# import pymol
-# pymol.finish_launching()
 
 
 parse_args = arg.ArgumentParser(description="This program performs the \
@@ -47,8 +43,8 @@ parse_args.add_argument('-d', '--directory', dest='path', action='store',
 parse_args.add_argument('-v', '-verbose', dest='verb', action="store_true",
                         default=False, help="Verbose description of program \
                         actions")
-parse_args.add_argument('--eigvl-num', dest='eigvl', action='store', default=4,
-                        help="Number of eigenvalues to plot (default is 4)")
+parse_args.add_argument('--eigvl-num', dest='eigvl', action='store', default=20,
+                        help="Number of eigenvalues to plot (default is 20)")
 parse_args.add_argument('--time-max', dest='time', action='store', default=1,
                         help="Maximum time during which the trajectories of a \
                         certain eigenvector")
@@ -171,15 +167,7 @@ new_moved = moved[:-5]+'.pdb'
 mdl.merge_the_header(moved, head, new_moved)
 os.remove(moved)
 
-if options.verb:
-    print("Generating RMSD plot for eigenvectors")
-plot = ED.RMSD_res_plot(options.eigvc, pathplots)
-# for file_img in image_list:
-#     sname = file_img.rstrip(".pdb")
-#     pymol.cmd.load(file_img, sname)
-#     pymol.cmd.disable("all")
-#     pymol.cmd.enable(sname)
-#     pymol.cmd.show("cartoon")
-#     pymol.cmd.png(sname+".png")
-# # Get out!
-# pymol.cmd.quit()
+if options.atom != 'all':
+    if options.verb:
+        print("Generating RMSD plot for eigenvectors")
+    plot = ED.RMSD_res_plot(options.eigvc, pathplots)

@@ -86,11 +86,16 @@ class EDAnalysis:
         # Calculate the number of residues that are aa
         for residue in self.structure[0].get_residues():
             if residue.has_id('CA'):
-                N += 1
+                if self.__atom == []:
+                    N += len(list(residue.get_atom()))
+                else:
+                    N += 1
         # Calculate the number of atoms to study, this will depend on which
         # atoms the users wants to focus(CA, backbone or all)
         if self.__atom != []:
             N *= len(self.__atom)*3
+        else:
+            N *= 3
         # Calculate the number of configurations available, in NMR this is the
         # number of models, in MD the number of time instants
         self.n = len(self.structure)
@@ -141,8 +146,8 @@ class EDAnalysis:
                     # CA = alpha carbon
                     if ref_res.has_id('CA'):
                         if self.__atom == []:
-                            ref_atoms.extend(list(ref_res.get_atoms()))
-                            alt_atoms.extend(list(alt_res.get_atoms()))
+                            ref_atoms.extend(list(ref_res.get_atom()))
+                            alt_atoms.extend(list(alt_res.get_atom()))
                         else:
                             for atoms in self.__atom:
                                 try:
@@ -181,17 +186,23 @@ class EDAnalysis:
             j = 0
             for residue in model.get_residues():
                 if residue.has_id('CA'):
-                    for atoms in self.__atom:
-                        try:
-                            array_stored[i][j:j+3] = residue[atoms].get_coord()
-                            means[0][j:j+3] += residue[atoms].get_coord()
-                            j += 3
-                        except KeyError:
-                            raise KeyError(('Your input data is misssing '
-                                            'information for {:s} atoms'
-                                            '. Input more complete data '
-                                            'or select a smaller set of '
-                                            'atoms').format(atoms))
+                    if self.__atom != []:
+                        for atoms in self.__atom:
+                            try:
+                                array_stored[i][j:j+3] = residue[atoms].get_coord()
+                                means[0][j:j+3] += residue[atoms].get_coord()
+                                j += 3
+                            except KeyError:
+                                raise KeyError(('Your input data is misssing '
+                                                'information for {:s} atoms'
+                                                '. Input more complete data '
+                                                'or select a smaller set of '
+                                                'atoms').format(atoms))
+                    else:
+                        for atoms in residue.get_atom():
+                                array_stored[i][j:j+3] = residue[atoms.id].get_coord()
+                                means[0][j:j+3] += residue[atoms.id].get_coord()
+                                j += 3
             i += 1
         means *= (1/self.n)
         self.coords_array = array_stored
@@ -299,16 +310,21 @@ class EDAnalysis:
             j = 0
             for residue in new_model.get_residues():
                 if residue.has_id('CA'):
-                    for atoms in self.__atom:
-                        try:
-                            residue[atoms].set_coord(eig_move[0][j:j+3])
+                    if self.__atom != []:
+                        for atoms in self.__atom:
+                            try:
+                                residue[atoms].set_coord(eig_move[0][j:j+3])
+                                j += 3
+                            except KeyError:
+                                raise KeyError(('Your input data is misssing '
+                                                'information for {:s} atoms'
+                                                '. Input more complete data '
+                                                'or select a smaller set of '
+                                                'atoms').format(atoms))
+                    else:
+                        for atoms in residue.get_atom():
+                            residue[atoms.id].set_coord(eig_move[0][j:j+3])
                             j += 3
-                        except KeyError:
-                            raise KeyError(('Your input data is misssing '
-                                            'information for {:s} atoms'
-                                            '. Input more complete data '
-                                            'or select a smaller set of '
-                                            'atoms').format(atoms))
             structure_moved.add(new_model)
         filename = ''.join([pathname, self.__PDBid, '_traj_evc', str(evc),
                             'i.pdb'])
@@ -342,6 +358,11 @@ class EDAnalysis:
         if evc < 1 or evc > self.N:
             raise ValueError('Eigenvector index has to be between 1 and N')
 
+        step = 1
+        if self.__atom != []:
+            step = len(self.__atom)*3
+        nres = int(self.N / step) - 15 + 1 + 1
+
         for evcn in range(1, evc+1):
             pcord = 0
             pmin = 10000000
@@ -358,8 +379,6 @@ class EDAnalysis:
             eig_move_min = pmin * self.eigvc[:, -evcn] + self.means
             pcord = np.dot(self.eigvc[:, -evcn], (self.coords_array[0] -
                                                   self.means[0, :]))
-            step = len(self.__atom)*3
-            nres = int(self.N / step) - 15 + 1 + 1
             RMSD_list = np.zeros(nres)
             j = 0
             i = 0

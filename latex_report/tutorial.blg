@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2014)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: tutorial.aux
+The style file: nature.bst
+Database file #1: Bibfile.bib
+Warning--empty title in Cock2009
+Warning--empty title in Hunter2007
+Warning--empty title in VanderWalt2011
+Warning--empty title in Hayward2008
+Warning--empty publisher in Hayward2008
+Warning--empty title in Tirion1996
+Warning--empty title in Amadei1993
+Warning--empty title in Gargallo2003
+Warning--empty title in VanAalten1998
+Warning--empty title in Ogata1994
+Warning--empty title in PyMOL
+Warning--empty note in PyMOL
+Warning--empty title in Tomomori1999
+Warning--empty title in Model
+You've used 12 entries,
+            1856 wiz_defined-function locations,
+            548 strings with 6380 characters,
+and the built_in function-call counts, 3457 in all, are:
+= -- 285
+> -- 207
+< -- 2
++ -- 74
+- -- 62
+* -- 391
+:= -- 566
+add.period$ -- 25
+call.type$ -- 12
+change.case$ -- 0
+chr.to.int$ -- 0
+cite$ -- 26
+duplicate$ -- 114
+empty$ -- 287
+format.name$ -- 62
+if$ -- 705
+int.to.chr$ -- 0
+int.to.str$ -- 12
+missing$ -- 11
+newline$ -- 51
+num.names$ -- 12
+pop$ -- 29
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 44
+stack$ -- 0
+substring$ -- 286
+swap$ -- 19
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 14
+while$ -- 35
+width$ -- 14
+write$ -- 109
+(There were 14 warnings)
