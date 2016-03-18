@@ -238,8 +238,8 @@ As we mentioned before, our program can be used with a graphical interface or vi
  ....\\
  
  We have experienced some troubles depending on the OS used in the PDBio class. In some cases the superimposed file "pdbcodealign.pdb" is saved with extra "END" lines that do not let the user directly see the pdb structure in PyMol. If it is your case, we provide you here a fast awk one-liner to solve the problem.  
- \begin{lstlisting}
- $ awk '$0 !  /^END$/ {print $0} END {print "END"}' 1msfalign.pdb > corrected.pdb
+ \begin{lstlisting} [language=Awk]
+ $ awk '$0 ! ~ /^END$/ {print $0} END {print "END"}' 1msfalign.pdb > corrected.pdb
  \end{lstlisting}
  \paragraph{CLI Usage}
  The command line interface has been built using the argparse library, in figure \ref{fig:usage} a complete description of all the options available can be seen. This description can be accessed with the commands:
