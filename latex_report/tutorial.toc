@@ -9,10 +9,10 @@
 \contentsline {subsubsection}{\numberline {2.2.1}Checking Dependencies}{6}
 \contentsline {subsubsection}{\numberline {2.2.2}Installing the Package}{6}
 \contentsline {subsubsection}{\numberline {2.2.3}Package contents}{7}
-\contentsline {subsubsection}{\numberline {2.2.4}Usage}{8}
-\contentsline {paragraph}{Graphical Usage}{8}
-\contentsline {paragraph}{CLI Usage}{9}
-\contentsline {section}{\numberline {3}Analysis of the performance and results}{9}
-\contentsline {subsection}{\numberline {3.1}Comparison of the results with Van Aalten 1998}{9}
-\contentsline {subsection}{\numberline {3.2}Testing superimposition with 1JOY structure}{11}
-\contentsline {subsection}{\numberline {3.3}Conclusions and Caveats}{12}
+\contentsline {subsubsection}{\numberline {2.2.4}Usage}{9}
+\contentsline {paragraph}{Graphical Usage}{9}
+\contentsline {paragraph}{CLI Usage}{10}
+\contentsline {section}{\numberline {3}Analysis of the performance and results}{11}
+\contentsline {subsection}{\numberline {3.1}Comparison of the results with Van Aalten 1998}{11}
+\contentsline {subsection}{\numberline {3.2}Testing superimposition with 1JOY structure}{13}
+\contentsline {subsection}{\numberline {3.3}Conclusions and Caveats}{14}

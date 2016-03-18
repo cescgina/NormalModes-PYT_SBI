@@ -224,7 +224,34 @@ and attributes:
 
 Additionally it contains a custom Exception class called WrongExceptionMode.\\
 
-Finally, the interface module contains all the code relevant for the graphical interface. It contains ...\\
+Finally, the interface module contains all the code relevant for the graphical interface. It contains basically a class for each window displayed in the interface and the main window which wraps them all up. Each class have its own methods and attributes that are important for the interface function. There are other methods and attributes, not shown, that are actually buttons, labels or entry boxes.  \\
+
+\begin{itemize}
+	\item  EDA\_app - It is the main window where all the other frames are projected. It contains the application data a a dictionary to switch easily between frames. It is inherited from tkinter.Tk. 
+	\begin{itemize}
+		\item app.data (attribute) it is a dictionary that contains the important data for the EDA module that needs to be passed from one frame to the other. 
+		\item frames (attribute) it is also a dictionary that stores the frames of the application. 
+		\item show\_frame (method) It is the only method in this class and it is used to switch to a specific frame wherever frame the user is. It uses information from the frame attribute. 
+	\end{itemize}
+	\item StartPage - It is the first frame the users can see after the execution. It leads to the loading data frame or the "about us" page. It is inherited from tkinter.Frame
+	\item initial\_root - Acts as a loading data frame. Is where the user interacts with the program by entering the required data and options. It is inherited from tkinter.Frame
+	\begin{itemize}
+		\item get\_pdb (method) pass on the pdb code and move the user to the waiting\_window
+        \item select\_file (method) pass on the pdb filename and move the user to the waiting\_window
+	\end{itemize}
+	\item waiting\_window - It is where the analysis is taking place. Incorporates the same steps that the PyEDA.py CLI except the projection step. After hitting the analysis button it redirects automatically to the plotting frame. It is inherited from tkinter.Frame
+	\begin{itemize}
+		\item analysis (method) It contains all the computations needed to perform the EDA. It also generate the plots at the end. When the plots are generated move the app to the plot\_window.
+	\end{itemize}
+	\item plot\_window - It shows buttons to the different ploting capabilities of the software. The plots are already computed and stored in the app data but here the canvas is set. It integrates matplotlib in the Tkinter window. It also contain an option to perform the projection. The user can select the eigenvector and the maximum span as integer values.
+	\begin{itemize}
+		\item eigen\_plot (method) It displays the plot eigenvalue vs eigenvector index.
+        \item RMSD\_plot (method) It shows the RMSD vs Residue plot. 
+        \item trajectory (method) It generates a trajectory file (.pdb) given the eigenvector index and the total span defined from the user
+	\end{itemize}
+	\item About\_EDA - It is a information page that contains an explanation of the software features. 
+\end{itemize}
+
 \subsubsection{Usage}
 
 As we mentioned before, our program can be used with a graphical interface or via the command line.
@@ -234,6 +261,23 @@ As we mentioned before, our program can be used with a graphical interface or vi
 \begin{lstlisting}
  $ python3 -m PyEDA
  \end{lstlisting}
+ 
+ The best way to see how the interface works is by checking the video tutorial or trying it yourself. You can go to the video-tutorial following the link:  \\
+ 
+ However, the different pages and windows are described below. 
+ 
+ \begin{enumerate}
+ \item In the path to the results, the first window it appears is the Start page. The function of this page is just to improve the application status of this software. From here, we can go to the about EDA page and to the starting point of our analysis. 
+ \item In the about EDA page we can see some information about the approach used in the software an what analyses it performs. You can go back to the starting page or go directly to the analysis.
+ \item Loading data page. In this winsow the user can load the data before starting with the analysis. There is 2 main options to load the data. You can either load a pdb file using the "Add a file button" (it have to be a standard pdb file) or you can introduce a pdb code in the entry box. After that you can press the "check code" button in order to check weather or not your code have 4 characters. If is a pdb-like code the box letters will be green and if there are less or more characters it will change the color to red. This is not a definite checking step but is a proof of concept capability that can be improved in the future. Then we have the "get pdb" button to start the analysis with the pdb code. Right now, the user cannot import a file and a code at the same time. This page also contains the parameters for the analysis. The user can select weather the pdb code provided is from a NMR structure or from a Molecular Dynamics simulation and also with what atoms of the protein the user want to perform the analysis. Usually, the main movement can be detected only with the $C_{\alpha}$ atoms but in some proteins the user may need to use all the atoms to compute the Essential Dynamics Analysis. After the "Add file" button or the "get pdb" button the user is send to the waiting window.
+ \item Waiting window. In this page the user must hit the button "Analysis" to start the computations. Depending on the atoms selected and the size of the pdb file this could be a time consuming step but normally do not take longer than a few seconds. After the analysis are done and the plots are computed internally, the software bring the user to the plot window. 
+ \item In this final window the user can choose which plot want to visualize. When clickin on a plot it enters in a matplotlib like environment where the user can move and interact with the graph and save it in a custom directory. The user can also generate as many trajectories as he wants. Basically to generate a trajectory you should introduce the eigenvector index which is going to be used to project the coordinates and then a full span, which will be the length of the trajectory. This trajectory generation is a time consuming task so if you are performing this analysis using the graphical interface the standard values are from 1 to 3. 
+ 
+ 
+ \end{enumerate}
+ 
+ 
+ 
  
  ....\\
  

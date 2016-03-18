@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: tutorial.aux
+The style file: nature.bst
+Database file #1: Bibfile.bib
+Warning--empty publisher in Hayward2008
+Warning--empty note in PyMOL
+You've used 11 entries,
+            2605 wiz_defined-function locations,
+            671 strings with 6855 characters,
+and the built_in function-call counts, 5159 in all, are:
+= -- 524
+> -- 173
+< -- 6
++ -- 94
+- -- 46
+* -- 446
+:= -- 897
+add.period$ -- 32
+call.type$ -- 11
+change.case$ -- 46
+chr.to.int$ -- 11
+cite$ -- 13
+duplicate$ -- 249
+empty$ -- 389
+format.name$ -- 77
+if$ -- 1023
+int.to.chr$ -- 1
+int.to.str$ -- 12
+missing$ -- 10
+newline$ -- 61
+num.names$ -- 33
+pop$ -- 84
+preamble$ -- 1
+purify$ -- 44
+quote$ -- 0
+skip$ -- 170
+stack$ -- 0
+substring$ -- 378
+swap$ -- 69
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 66
+warning$ -- 2
+while$ -- 43
+width$ -- 0
+write$ -- 147
+(There were 2 warnings)
