@@ -388,14 +388,27 @@ To test the MD analysis capabilities we tried to reproduce the work of Amadei et
 
 According to Model, the data was generated with the AMBER8.0 program, a 	parm99 tip3P force field, 26483 total atoms and a simulation time of 20000 ps. We chose to download only data from the backbone atoms and processed it with the program pcaunzip that the database provided. This yielded a pdb file with 200 models and 516 atoms each. Note that despite the fact that we had data for all the backbone atoms, we performed the analysis only with the alpha carbon. The reason for this is the extraordinary amount of memory that is required to process all the backbone atoms. All executions were carried on in a laptop with a quad-core Intel i7-5500U, with 8GB of memory. We tried to run the analysis with all Backbone atoms, but the computer slowed down to a point it was no longer usable, so we advice to proceed with caution when working with MD data, or to use a computer cluster to run this kind of heavy computations. It is worth noting that none of this happened with the easier NMR computations, where the program via the CLI finished in about a minute.\\
 
-With this data we have performed the same analysis than with the NMR data
+With this data we have performed the same analysis than with the NMR data, and we obtained the same output, in figure \ref{fig:Md1}, we can see the eigenvalues plot, where again it is obvious that the first 10 are the most important, while the following 20 approach zero. In figure \ref{fig:Md2} we can see that this case present slightly more complex case. In the graphic we can differentiate two different peaks of movement, one roughly between residues 40 and 60 which is present for all four first eigenvectors and one between residues 60 and 80, that is only present in eigenvectors 2 and 3.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{eig_1dpx_plot.png}
+\caption{Plot of the first 30 eigenvalues}
+\label{fig:Md1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{eig_4_1dpx_resplot.png}
+\caption{Plot of the RMSD of each residue for the first 4 eigenvectors}
+\label{fig:Md2}
+\end{figure}
 \subsection{Conclusions and Caveats}
-PyEDA is a wrap up of the Essential Dynamics approach to get a Normal Mode Analysis of any NMR pdb structure and any MD pdb-like file. As conclusion we may stress that PyEDA is a promising and useful tool specially for the analysis of protein dynamics.  It is a unified and complete analysis tool to get protein motion. It is designed to easily uncover and quantify the functional motions of NMR and MD structures. It can be used autonomously using the guided graphical interface or using the CLI which gives the user the possibility to automatize the process. It also have a easy and user-friendly installation process and it is based on the most used programming language, python. 
+PyEDA is a wrap up of the Essential Dynamics approach to get a Normal Mode Analysis of any NMR pdb structure and any MD pdb-like file. As conclusion we may stress that PyEDA is a promising and useful tool specially for the analysis of protein dynamics.  It is a unified and complete analysis tool to get protein motion. It is designed to easily uncover and quantify the functional motions of NMR and MD structures. It can be used autonomously using the guided graphical interface or using the CLI which gives the user the possibility to automatize the process. It also have a easy and user-friendly installation process and it is based on the most used programming language, python. \\
 
-The main improvement that we could implement in the future is a PyMol integration to the tkinter graphical interface. This feature have not been implemented because the actual version of PyMol have only a python2.7 integration meanwhile PyEDA is based on python3. Although a patch code exist to use PyMol with python3 we believe that it may be a stable version of the program in order to distribute PyEDA with the appropriate PyMol integration. 
+The main improvement that we could implement in the future is a PyMol integration to the tkinter graphical interface. This feature have not been implemented because the actual version of PyMol have only a python2.7 integration meanwhile PyEDA is based on python3. Although a patch code exist to use PyMol with python3 we believe that it may be a stable version of the program in order to distribute PyEDA with the appropriate PyMol integration. \\
 
-As a major caveats we must stress the large number of dependencies PyEDA have and a previously mentioned problem with the "END" keyword in the pdb file writting that we have not been able to find the source. PyEDA have dependencies on  BioPython\citep{Cock2009}, Tkinter, Matplotlib\citep{Hunter2007}, NumPy and SciPy\citep{VanderWalt2011} packages but if the user is a python experimented bioinformatician these packages should be installed and updated in their system. Moreover, to non-experimented python users these packages can also be easily installed using the pip3 module. 
+As a major caveats we must stress the large number of dependencies PyEDA have and a previously mentioned problem with the "END" keyword in the pdb file writting that we have not been able to find the source. PyEDA have dependencies on  BioPython\citep{Cock2009}, Tkinter, Matplotlib\citep{Hunter2007}, NumPy and SciPy\citep{VanderWalt2011} packages but if the user is a python experimented bioinformatician these packages should be installed and updated in their system. Moreover, to non-experimented python users these packages can also be easily installed using the pip3 module.\\ 
 
 The "END" bug have only been detected in a mac OS meanwhile in fedora it works perfectly. These may be because of some Biopython dependencies. It should run okay in other machines but in case the bug is happening to you we propose an awk one-liner to easily correct this error (see section 2). 
 

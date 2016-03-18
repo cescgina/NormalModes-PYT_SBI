@@ -8,3 +8,5 @@
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces {1joy from pdb}}}{16}
 \contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Superimposed 1joy}}}{16}
 \contentsline {figure}{\numberline {8}{\ignorespaces Plot of the most different projected structures. Window size used, 15aa.\relax }}{16}
+\contentsline {figure}{\numberline {9}{\ignorespaces Plot of the first 30 eigenvalues\relax }}{17}
+\contentsline {figure}{\numberline {10}{\ignorespaces Plot of the RMSD of each residue for the first 4 eigenvectors\relax }}{18}
